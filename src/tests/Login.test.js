@@ -23,10 +23,35 @@ describe('Pagina de Login', () => {
 
     const inputEmail = screen.getByTestId('email-input');
     expect(inputEmail).toBeInTheDocument();
-    userEvent.type(inputEmail, 'test@trybe.com');
-    expect(inputEmail.value).toBe('test@trybe.com');
+    userEvent.type(inputEmail, 'teste@trybe.com');
+    expect(inputEmail.value).toBe('teste@trybe.com');
     expect(btnEnter).toHaveProperty('disabled', false);
 
     expect(history.location.pathname).toBe('/');
+  });
+
+  test('1- Verificar se ao clicar no button redireciona para Tela de receitas', () => {
+    const { history } = renderWithRouterAndRedux(<App />);
+
+    expect(history.location.pathname).toBe('/');
+
+    const btnEnter = screen.getByRole('button', { name: /Enter/i });
+    expect(btnEnter).toBeInTheDocument();
+
+    const inputPassword = screen.getByTestId('password-input');
+    expect(inputPassword).toBeInTheDocument();
+    userEvent.type(inputPassword, '1234567');
+    expect(inputPassword.value).toBe('1234567');
+
+    const inputEmail = screen.getByTestId('email-input');
+    expect(inputEmail).toBeInTheDocument();
+    userEvent.type(inputEmail, 'test@trybe.com');
+    expect(inputEmail.value).toBe('test@trybe.com');
+
+    expect(history.location.pathname).toBe('/');
+
+    userEvent.click(btnEnter);
+
+    expect(history.location.pathname).toBe('/meals');
   });
 });

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 class Login extends Component {
   state = {
@@ -8,6 +9,14 @@ class Login extends Component {
 
   handleChange = ({ target: { name, value } }) => {
     this.setState({ [name]: value });
+  };
+
+  saveResults = () => {
+    const { history: { push } } = this.props;
+    const { email } = this.state;
+    const userInfo = { email };
+    push('/meals');
+    localStorage.setItem('user', JSON.stringify(userInfo));
   };
 
   render() {
@@ -45,6 +54,7 @@ class Login extends Component {
             type="button"
             data-testid="login-submit-btn"
             disabled={ !emailRegex.test(email) || magicNumber > password.length }
+            onClick={ this.saveResults }
           >
             Enter
           </button>
@@ -53,5 +63,9 @@ class Login extends Component {
     );
   }
 }
+
+Login.propTypes = {
+  push: PropTypes.func,
+}.isRequired;
 
 export default Login;
