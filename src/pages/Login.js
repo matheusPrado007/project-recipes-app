@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Header from '../components/Header';
 import PropTypes from 'prop-types';
 
 class Login extends Component {
@@ -20,12 +21,14 @@ class Login extends Component {
   };
 
   render() {
+    // const { history } = this.props;
     const { email, password } = this.state;
     const emailRegex = /^[a-z0-9.]+@[a-z0-9]+\.[a-z]+$/i;
     const magicNumber = 7;
     console.log(email);
     return (
       <div>
+        {/* <Header history={ history } /> */}
         <h1>App de Receitas</h1>
         <form>
           <label htmlFor="email">
