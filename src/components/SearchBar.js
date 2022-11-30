@@ -71,7 +71,7 @@ class SearchBar extends React.Component {
   searchButton = async () => {
     const { location: { pathname }, history: { push } } = this.props;
 
-    if (pathname === '/') {
+    if (pathname === '/meals') {
       const filter = await this.filtersIfMeals();
       const result = filter.meals;
 
