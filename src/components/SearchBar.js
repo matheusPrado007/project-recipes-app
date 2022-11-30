@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { filterMealsByIngredient, filterMealsByName,
   filterMealsByFistLetter, filterDrinksByIngredient, filterDrinksByName,
-  filterDrinksByFistLetter } from '../services/api';
+  filterDrinksByFistLetter } from '../services/filtersApi';
 
 class SearchBar extends React.Component {
   state = {
@@ -71,11 +71,13 @@ class SearchBar extends React.Component {
   searchButton = async () => {
     const { location: { pathname }, history: { push } } = this.props;
 
-    if (pathname === '/meals') {
+    if (pathname === '/') {
       const filter = await this.filtersIfMeals();
       const result = filter.meals;
 
-      if (result.length === 1) {
+      if (!result) {
+        global.alert('Sorry, we haven\'t found any recipes for these filters.');
+      } else if (result.length === 1) {
         push(`/meals/${result[0].idMeal}`);
       }
 
