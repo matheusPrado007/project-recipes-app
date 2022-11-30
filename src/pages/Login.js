@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
+import Header from '../components/Header';
 
 class Login extends Component {
   render() {
+    // const { history } = this.props;
     return (
       <div>
+        {/* <Header history={ history } /> */}
         <h1>App de Receitas</h1>
         <label htmlFor="email">
           <input

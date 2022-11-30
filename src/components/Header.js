@@ -1,0 +1,117 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+// import { connect } from 'react-redux';
+import profileIcon from '../images/profileIcon.svg';
+import searchIcon from '../images/searchIcon.svg';
+// import SearchBar from './Searchbar.js';
+
+class Header extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      searching: false,
+      pathName: '',
+      noSearch: false,
+    };
+  }
+
+  componentDidMount() {
+    const { history } = this.props;
+    switch (history.location.pathname) {
+    case '/profile':
+      this.setState({
+        pathName: 'Profile',
+        noSearch: true,
+      });
+      break;
+    case '/drink':
+      this.setState({
+        pathName: 'Drink',
+      });
+      break;
+    case '/meals':
+      this.setState({
+        pathName: 'Meals',
+      });
+      break;
+    case '/done-recipes':
+      this.setState({
+        pathName: 'Done Recipes',
+        noSearch: true,
+      });
+      break;
+    case '/favorite-recipes':
+      this.setState({
+        pathName: 'Favorite Recipes',
+        noSearch: true,
+      });
+      break;
+    default:
+      console.log();
+    }
+  }
+
+  handleSearch = () => {
+    const { searching } = this.state;
+    if (searching) {
+      this.setState({
+        searching: false,
+      });
+    } else {
+      this.setState({
+        searching: true,
+      });
+    }
+  };
+
+  render() {
+    const { searching, pathName, noSearch } = this.state;
+    return (
+      <div>
+        <h1
+          data-testid="page-title"
+        >
+          {pathName}
+        </h1>
+        <Link
+          to="/profile"
+        >
+          <button
+            type="button"
+          // onClick={ this.handleProfile }
+          >
+            <img
+              data-testid="search-top-btn"
+              src={ profileIcon }
+              type="image/svg+xml"
+              alt="profile icon"
+            />
+          </button>
+        </Link>
+        {!noSearch
+          && (
+            <button
+              type="button"
+              onClick={ this.handleSearch }
+            >
+              <img
+                data-testid="search-top-btn"
+                src={ searchIcon }
+                name="searchIcon"
+                type="image/svg+xml"
+                alt="search icon"
+              />
+            </button>
+          )}
+        {/* { searching && <SearchBar />} */}
+      </div>
+    );
+  }
+}
+
+Header.propTypes = {
+  // name: PropTypes.string
+}.isRequired;
+
+export default Header;
+// export default connect()(Header);
