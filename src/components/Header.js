@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 // import { connect } from 'react-redux';
 import profileIcon from '../images/profileIcon.svg';
 import searchIcon from '../images/searchIcon.svg';
-// import SearchBar from './Searchbar.js';
+import SearchBar from './SearchBar';
 
 class Header extends React.Component {
   constructor() {
@@ -16,17 +16,17 @@ class Header extends React.Component {
   }
 
   componentDidMount() {
-    const { history } = this.props;
-    switch (history.location.pathname) {
+    const { history: { location: { pathname } } } = this.props;
+    switch (pathname) {
     case '/profile':
       this.setState({
         pathName: 'Profile',
         noSearch: true,
       });
       break;
-    case '/drink':
+    case '/drinks':
       this.setState({
-        pathName: 'Drink',
+        pathName: 'Drinks',
       });
       break;
     case '/meals':
@@ -47,7 +47,7 @@ class Header extends React.Component {
       });
       break;
     default:
-      console.log();
+      console.log(pathname);
     }
   }
 
@@ -81,7 +81,7 @@ class Header extends React.Component {
           // onClick={ this.handleProfile }
           >
             <img
-              data-testid="search-top-btn"
+              data-testid="profile-top-btn"
               src={ profileIcon }
               type="image/svg+xml"
               alt="profile icon"
@@ -103,7 +103,7 @@ class Header extends React.Component {
               />
             </button>
           )}
-        {/* { searching && <SearchBar />} */}
+        { searching && <SearchBar />}
       </div>
     );
   }
