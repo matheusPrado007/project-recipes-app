@@ -1,21 +1,19 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Header from '../components/Header';
-import Footer from '../components/Footer';
 
-class Profile extends Component {
+class FavoriteRecipes extends Component {
   render() {
     const { history } = this.props;
     return (
       <div>
         <Header history={ history } />
-        <Footer />
       </div>
     );
   }
 }
 
-Profile.propTypes = {
+FavoriteRecipes.propTypes = {
   history: PropTypes.shape({
     location: PropTypes.shape({
       pathname: PropTypes.string,
@@ -23,4 +21,4 @@ Profile.propTypes = {
   }).isRequired,
 };
 
-export default Profile;
+export default FavoriteRecipes;

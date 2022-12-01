@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { getDrinksAndFoods } from '../redux/actions';
 import { getMealsApi } from '../Services/getAPI';
+import Header from './Header';
+import Footer from './Footer';
 
 class Meals extends Component {
   componentDidMount() {
@@ -20,8 +22,10 @@ class Meals extends Component {
   render() {
     const { foodsAndDrinks } = this.props;
     console.log(foodsAndDrinks);
+    const { history } = this.props;
     return (
       <div>
+        <Header history={ history } />
         {
           foodsAndDrinks.map((meal, index) => {
             const { strMeal, strMealThumb } = meal;
@@ -45,10 +49,12 @@ class Meals extends Component {
             );
           })
         }
+        <Footer />
       </div>
     );
   }
 }
+
 const mapStateToProps = (state) => ({
   foodsAndDrinks: state.drinksAndFoods.foodsAndDrinks,
 });

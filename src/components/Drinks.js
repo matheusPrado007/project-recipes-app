@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { getDrinksAndFoods } from '../redux/actions';
 import { getDrinksApi } from '../Services/getAPI';
+import Header from './Header';
+import Footer from './Footer';
 
 class Recipes extends Component {
   componentDidMount() {
@@ -20,8 +22,10 @@ class Recipes extends Component {
   render() {
     const { foodsAndDrinks } = this.props;
     console.log(foodsAndDrinks);
+    const { history } = this.props;
     return (
       <div>
+        <Header history={ history } />
         {
           foodsAndDrinks.map((drink, index) => {
             const { strDrink, strDrinkThumb } = drink;
@@ -45,6 +49,7 @@ class Recipes extends Component {
             );
           })
         }
+        <Footer />
       </div>
     );
   }
@@ -61,6 +66,11 @@ Recipes.propTypes = {
   }).isRequired,
   location: PropTypes.shape({
     pathname: PropTypes.string,
+  }).isRequired,
+  history: PropTypes.shape({
+    location: PropTypes.shape({
+      pathname: PropTypes.string,
+    }).isRequired,
   }).isRequired,
 };
 export default connect(mapStateToProps)(Recipes);
