@@ -25,3 +25,17 @@ export const getMealsApi = async () => {
     return { drinks: [] };
   }
 };
+
+export const getCategoriesMeals = async () => {
+  const url = 'https://www.themealdb.com/api/json/v1/1/list.php?c=list';
+  const response = await fetch(url);
+  const data = await response.json();
+  return data;
+};
+
+export const getCategoriesDrinks = async () => {
+  const url = 'https://www.thecocktaildb.com/api/json/v1/1/list.php?c=list';
+  const response = await fetch(url);
+  const data = await response.json();
+  return data;
+};

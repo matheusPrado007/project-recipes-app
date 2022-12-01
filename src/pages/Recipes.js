@@ -6,7 +6,6 @@ function Recipes({ history: { location: { pathname } } }) {
   console.log(pathname);
   return (
     <div>
-      Recipes
       {pathname === '/meals' ? <Meals /> : <Drinks /> }
     </div>
   );
