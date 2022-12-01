@@ -144,7 +144,7 @@ class SearchBar extends React.Component {
             checked={ selectedOption === 'fistLetter' }
             onChange={ this.onRadioChange }
           />
-          Frist letter
+          First letter
         </label>
 
         <button
