@@ -5,7 +5,6 @@ import Drinks from '../components/Drinks';
 function Recipes({ history: { location: { pathname } } }) {
   return (
     <div>
-      Recipes
       {pathname === '/meals' ? <Meals /> : <Drinks /> }
     </div>
   );

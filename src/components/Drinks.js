@@ -1,12 +1,13 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { getDrinksAndFoods } from '../redux/actions';
-import { getDrinksApi } from '../Services/getAPI';
+import { getDrinksAndFoods, getCategDrinksAndFoods } from '../redux/actions';
+import { getDrinksApi, getCategoriesDrinks } from '../Services/getAPI';
 
 class Recipes extends Component {
   componentDidMount() {
     this.fetchApi();
+    this.drinksCategoriesApi();
   }
 
   fetchApi = async () => {
@@ -17,11 +18,33 @@ class Recipes extends Component {
     dispatch(getDrinksAndFoods(result.slice(0, twelve)));
   };
 
+  drinksCategoriesApi = async () => {
+    const { dispatch } = this.props;
+    const requestDrinksApi = await getCategoriesDrinks();
+    const result = requestDrinksApi.drinks;
+    const five = 5;
+    dispatch(getCategDrinksAndFoods(result.slice(0, five)));
+  };
+
   render() {
-    const { foodsAndDrinks } = this.props;
-    console.log(foodsAndDrinks);
+    const { foodsAndDrinks, getCategories } = this.props;
     return (
       <div>
+        Drink
+        {
+          getCategories.map((drink, index) => {
+            const { strCategory } = drink;
+            return (
+              <button
+                type="button"
+                key={ index }
+                data-testid={ `${strCategory}-category-filter` }
+              >
+                { strCategory }
+              </button>
+            );
+          })
+        }
         {
           foodsAndDrinks.map((drink, index) => {
             const { strDrink, strDrinkThumb } = drink;
@@ -51,10 +74,15 @@ class Recipes extends Component {
 }
 const mapStateToProps = (state) => ({
   foodsAndDrinks: state.drinksAndFoods.foodsAndDrinks,
+  getCategories: state.drinksAndFoods.getCategories,
 });
 
 Recipes.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  getCategories: PropTypes.shape({
+    map: PropTypes.func,
+    slice: PropTypes.func,
+  }).isRequired,
   foodsAndDrinks: PropTypes.shape({
     map: PropTypes.func,
     slice: PropTypes.func,

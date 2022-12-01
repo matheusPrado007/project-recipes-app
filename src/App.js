@@ -4,8 +4,6 @@ import './App.css';
 import Login from './pages/Login';
 import Recipes from './pages/Recipes';
 import Profile from './pages/Profile';
-import Meals from './pages/Meals';
-
 
 function App() {
   return (
@@ -19,7 +17,6 @@ function App() {
       {/* <Route exact path="/meals/:id" />
       <Route exact path="/done-recipes" component={ DoneRecipes } />
       <Route exact path="/favorite-recipes" component={ FavoriteRecipes } /> */}
- 
 
     </Switch>
   );

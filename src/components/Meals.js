@@ -1,12 +1,13 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { getDrinksAndFoods } from '../redux/actions';
-import { getMealsApi } from '../Services/getAPI';
+import { getDrinksAndFoods, getCategDrinksAndFoods } from '../redux/actions';
+import { getMealsApi, getCategoriesMeals } from '../Services/getAPI';
 
 class Meals extends Component {
   componentDidMount() {
     this.fetchApi();
+    this.mealsCategoriesApi();
   }
 
   fetchApi = async () => {
@@ -17,11 +18,34 @@ class Meals extends Component {
     dispatch(getDrinksAndFoods(result.slice(0, twelve)));
   };
 
+  mealsCategoriesApi = async () => {
+    const { dispatch } = this.props;
+    const requestDrinksApi = await getCategoriesMeals();
+    const result = requestDrinksApi.meals;
+    const five = 5;
+    dispatch(getCategDrinksAndFoods(result.slice(0, five)));
+  };
+
   render() {
-    const { foodsAndDrinks } = this.props;
-    console.log(foodsAndDrinks);
+    const { foodsAndDrinks, getCategories } = this.props;
+    console.log(foodsAndDrinks, getCategories);
     return (
       <div>
+        Meals
+        {
+          getCategories.map((meal, index) => {
+            const { strCategory } = meal;
+            return (
+              <button
+                type="button"
+                key={ index }
+                data-testid={ `${strCategory}-category-filter` }
+              >
+                { strCategory }
+              </button>
+            );
+          })
+        }
         {
           foodsAndDrinks.map((meal, index) => {
             const { strMeal, strMealThumb } = meal;
@@ -51,11 +75,16 @@ class Meals extends Component {
 }
 const mapStateToProps = (state) => ({
   foodsAndDrinks: state.drinksAndFoods.foodsAndDrinks,
+  getCategories: state.drinksAndFoods.getCategories,
 });
 
 Meals.propTypes = {
   dispatch: PropTypes.func.isRequired,
   foodsAndDrinks: PropTypes.shape({
+    map: PropTypes.func,
+    slice: PropTypes.func,
+  }).isRequired,
+  getCategories: PropTypes.shape({
     map: PropTypes.func,
     slice: PropTypes.func,
   }).isRequired,
