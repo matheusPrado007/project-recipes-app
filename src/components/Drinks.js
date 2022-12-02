@@ -1,12 +1,17 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+// import { Link } from 'react-router-dom';
 import { getDrinksAndFoods, getCategDrinksAndFoods } from '../redux/actions';
 import { getDrinksApi, getCategoriesDrinks, getFilterDrink } from '../Services/getAPI';
 import Header from './Header';
 import Footer from './Footer';
 
 class Recipes extends Component {
+  state = {
+    categories: '',
+  };
+
   componentDidMount() {
     this.fetchApi();
     this.drinksCategoriesApi();
@@ -30,6 +35,9 @@ class Recipes extends Component {
 
   onClick = async ({ target }) => {
     const { name } = target;
+    const { categories } = this.state;
+    if (name === categories) return this.handleClick();
+    this.setState({ categories: name });
     const { dispatch } = this.props;
     const twelve = 12;
     const requestApi = await getFilterDrink(name);
@@ -50,15 +58,6 @@ class Recipes extends Component {
     return (
       <div>
         <Header history={ history } />
-        <button
-          data-testid="All-category-filter"
-          type="button"
-          name="all"
-          onClick={ this.handleClick }
-        >
-          All
-
-        </button>
         {
           getCategories.map((drink, index) => {
             const { strCategory } = drink;
@@ -75,6 +74,15 @@ class Recipes extends Component {
             );
           })
         }
+        <button
+          data-testid="All-category-filter"
+          type="button"
+          name="all"
+          onClick={ this.handleClick }
+        >
+          All
+
+        </button>
         {
           foodsAndDrinks.map((drink, index) => {
             const { strDrink, strDrinkThumb } = drink;

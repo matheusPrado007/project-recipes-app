@@ -7,6 +7,10 @@ import Header from './Header';
 import Footer from './Footer';
 
 class Meals extends Component {
+  state = {
+    categories: '',
+  };
+
   componentDidMount() {
     this.fetchApi();
     this.mealsCategoriesApi();
@@ -30,6 +34,9 @@ class Meals extends Component {
 
   onClick = async ({ target }) => {
     const { name } = target;
+    const { categories } = this.state;
+    if (name === categories) return this.handleClick();
+    this.setState({ categories: name });
     const { dispatch } = this.props;
     const twelve = 12;
     const requestApi = await getFilter(name);
@@ -49,14 +56,6 @@ class Meals extends Component {
     return (
       <div>
         <Header history={ history } />
-        <button
-          data-testid="All-category-filter"
-          type="button"
-          onClick={ this.handleClick }
-        >
-          All
-
-        </button>
         {
           getCategories.map((meal, index) => {
             const { strCategory } = meal;
@@ -73,6 +72,14 @@ class Meals extends Component {
             );
           })
         }
+        <button
+          data-testid="All-category-filter"
+          type="button"
+          onClick={ this.handleClick }
+        >
+          All
+
+        </button>
         {
           foodsAndDrinks.map((meal, index) => {
             const { strMeal, strMealThumb } = meal;
