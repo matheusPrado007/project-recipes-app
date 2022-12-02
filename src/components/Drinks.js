@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-// import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { getDrinksAndFoods, getCategDrinksAndFoods } from '../redux/actions';
 import { getDrinksApi, getCategoriesDrinks, getFilterDrink } from '../Services/getAPI';
 import Header from './Header';
@@ -87,22 +87,24 @@ class Recipes extends Component {
           foodsAndDrinks.map((drink, index) => {
             const { strDrink, strDrinkThumb } = drink;
             return (
-              <div
-                key={ index }
-                data-testid={ `${index}-recipe-card` }
-              >
+              <Link to={ `/drinks/${drink.idDrink}` } key={ drink.idDrink }>
+                <div
+                  key={ index }
+                  data-testid={ `${index}-recipe-card` }
+                >
 
-                <img
-                  data-testid={ `${index}-card-img` }
-                  src={ strDrinkThumb }
-                  alt="IMG"
-                  width="80px"
-                />
+                  <img
+                    data-testid={ `${index}-card-img` }
+                    src={ strDrinkThumb }
+                    alt="IMG"
+                    width="80px"
+                  />
 
-                <h2 data-testid={ `${index}-card-name` }>
-                  {strDrink}
-                </h2>
-              </div>
+                  <h2 data-testid={ `${index}-card-name` }>
+                    {strDrink}
+                  </h2>
+                </div>
+              </Link>
             );
           })
         }
