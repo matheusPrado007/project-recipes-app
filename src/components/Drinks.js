@@ -2,10 +2,9 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { getDrinksAndFoods, getCategDrinksAndFoods } from '../redux/actions';
-import { getDrinksApi, getCategoriesDrinks } from '../Services/getAPI';
+import { getDrinksApi, getCategoriesDrinks, getFilterDrink } from '../Services/getAPI';
 import Header from './Header';
 import Footer from './Footer';
-
 
 class Recipes extends Component {
   componentDidMount() {
@@ -29,21 +28,47 @@ class Recipes extends Component {
     dispatch(getCategDrinksAndFoods(result.slice(0, five)));
   };
 
+  onClick = async ({ target }) => {
+    const { name } = target;
+    const { dispatch } = this.props;
+    const twelve = 12;
+    const requestApi = await getFilterDrink(name);
+    dispatch(getDrinksAndFoods(requestApi.slice(0, twelve)));
+  };
+
+  handleClick = async () => {
+    const { dispatch } = this.props;
+    const twelve = 12;
+    const { drinks } = await getDrinksApi();
+    dispatch(getDrinksAndFoods(drinks.slice(0, twelve)));
+  };
+
   render() {
     const { foodsAndDrinks, getCategories } = this.props;
-     const { history } = this.props;
+    console.log(foodsAndDrinks);
+    const { history } = this.props;
     return (
       <div>
         <Header history={ history } />
-        Drink
+        <button
+          data-testid="All-category-filter"
+          type="button"
+          name="all"
+          onClick={ this.handleClick }
+        >
+          All
+
+        </button>
         {
           getCategories.map((drink, index) => {
             const { strCategory } = drink;
             return (
               <button
-                type="button"
                 key={ index }
                 data-testid={ `${strCategory}-category-filter` }
+                type="button"
+                name={ strCategory }
+                onClick={ this.onClick }
               >
                 { strCategory }
               </button>
@@ -88,6 +113,7 @@ Recipes.propTypes = {
   getCategories: PropTypes.shape({
     map: PropTypes.func,
     slice: PropTypes.func,
+    dispatch: PropTypes.func,
   }).isRequired,
   foodsAndDrinks: PropTypes.shape({
     map: PropTypes.func,
