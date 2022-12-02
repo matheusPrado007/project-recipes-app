@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { getDrinksAndFoods, getCategDrinksAndFoods } from '../redux/actions';
-import { getMealsApi, getCategoriesMeals } from '../Services/getAPI';
+import { getMealsApi, getCategoriesMeals, getFilter } from '../Services/getAPI';
 import Header from './Header';
 import Footer from './Footer';
 
@@ -28,21 +28,45 @@ class Meals extends Component {
     dispatch(getCategDrinksAndFoods(result.slice(0, five)));
   };
 
+  onClick = async ({ target }) => {
+    const { name } = target;
+    const { dispatch } = this.props;
+    const twelve = 12;
+    const requestApi = await getFilter(name);
+    dispatch(getDrinksAndFoods(requestApi.slice(0, twelve)));
+  };
+
+  handleClick = async () => {
+    const { dispatch } = this.props;
+    const twelve = 12;
+    const { meals } = await getMealsApi();
+    dispatch(getDrinksAndFoods(meals.slice(0, twelve)));
+  };
+
   render() {
     const { foodsAndDrinks, getCategories } = this.props;
     const { history } = this.props;
     return (
       <div>
         <Header history={ history } />
-        Meals
+        <button
+          data-testid="All-category-filter"
+          type="button"
+          onClick={ this.handleClick }
+        >
+          All
+
+        </button>
         {
           getCategories.map((meal, index) => {
             const { strCategory } = meal;
             return (
               <button
-                type="button"
                 key={ index }
                 data-testid={ `${strCategory}-category-filter` }
+                type="button"
+                name={ strCategory }
+                onClick={ this.onClick }
               >
                 { strCategory }
               </button>
@@ -90,6 +114,7 @@ Meals.propTypes = {
   getCategories: PropTypes.shape({
     map: PropTypes.func,
     slice: PropTypes.func,
+    dispatch: PropTypes.func,
   }).isRequired,
   history: PropTypes.shape({
     location: PropTypes.shape({
