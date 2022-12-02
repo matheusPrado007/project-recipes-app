@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { getDrinksAndFoods, getCategDrinksAndFoods } from '../redux/actions';
 import { getMealsApi, getCategoriesMeals, getFilter } from '../Services/getAPI';
 import Header from './Header';
@@ -84,20 +85,22 @@ class Meals extends Component {
           foodsAndDrinks.map((meal, index) => {
             const { strMeal, strMealThumb } = meal;
             return (
-              <div
-                key={ index }
-                data-testid={ `${index}-recipe-card` }
-              >
-                <img
-                  data-testid={ `${index}-card-img` }
-                  src={ strMealThumb }
-                  alt="IMG"
-                  width="80px"
-                />
-                <h2 data-testid={ `${index}-card-name` }>
-                  {strMeal}
-                </h2>
-              </div>
+              <Link to={ `/meals/${meal.idMeal}` } key={ meal.idMeal }>
+                <div
+                  key={ index }
+                  data-testid={ `${index}-recipe-card` }
+                >
+                  <img
+                    data-testid={ `${index}-card-img` }
+                    src={ strMealThumb }
+                    alt="IMG"
+                    width="80px"
+                  />
+                  <h2 data-testid={ `${index}-card-name` }>
+                    {strMeal}
+                  </h2>
+                </div>
+              </Link>
             );
           })
         }
