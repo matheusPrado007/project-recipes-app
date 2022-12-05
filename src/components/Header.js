@@ -46,6 +46,12 @@ class Header extends React.Component {
         noSearch: true,
       });
       break;
+    case '/meals/:id/in-progress':
+      this.setState({
+        pathName: 'Recipes',
+        noSearch: true,
+      });
+      break;
     default:
       console.log(pathname);
     }

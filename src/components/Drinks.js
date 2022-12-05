@@ -6,7 +6,6 @@ import { getDrinksApi, getCategoriesDrinks } from '../Services/getAPI';
 import Header from './Header';
 import Footer from './Footer';
 
-
 class Recipes extends Component {
   componentDidMount() {
     this.fetchApi();
@@ -31,7 +30,7 @@ class Recipes extends Component {
 
   render() {
     const { foodsAndDrinks, getCategories } = this.props;
-     const { history } = this.props;
+    const { history } = this.props;
     return (
       <div>
         <Header history={ history } />
