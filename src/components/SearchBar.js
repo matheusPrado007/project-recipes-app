@@ -101,6 +101,7 @@ class SearchBar extends React.Component {
     return (
       <div>
         <input
+          data-testid="search-input"
           value={ search }
           placeholder="search"
           name="search"
