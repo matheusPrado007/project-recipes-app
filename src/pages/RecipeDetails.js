@@ -29,8 +29,28 @@ class RecipeDetails extends React.Component {
   }
 
   render() {
+    const { recipe } = this.state;
+    // const recipeIngredients = recipe.entries;
+    // console.log(recipeIngredients);
     return (
-      <h1>RecipeDetails</h1>
+      <>
+        <h1>RecipeDetails</h1>
+        <h2
+          data-testid="recipe-title"
+        >
+          { recipe.strMeal }
+        </h2>
+        <h6
+          data-testid="recipe-category"
+        >
+          { recipe.strCategory }
+        </h6>
+        <img
+          data-testid="recipe-photo"
+          src={ recipe.strMealThumb }
+          alt={ recipe.strMeal }
+        />
+      </>
     );
   }
 }
