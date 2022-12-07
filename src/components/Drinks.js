@@ -53,7 +53,7 @@ class Recipes extends Component {
 
   render() {
     const { foodsAndDrinks, getCategories } = this.props;
-    console.log(foodsAndDrinks);
+    // console.log(foodsAndDrinks);
     const { history } = this.props;
     return (
       <div>
