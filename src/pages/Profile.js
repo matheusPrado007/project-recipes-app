@@ -6,12 +6,14 @@ import Footer from '../components/Footer';
 class Profile extends Component {
   render() {
     const { history } = this.props;
+    const getLocalStorage = JSON.parse(localStorage.getItem('user'));
     return (
       <div>
         <Header history={ history } />
         <Footer />
         <main>
           <p data-testid="profile-email">
+            { getLocalStorage.email }
             E-mail
           </p>
           <button
@@ -32,6 +34,7 @@ class Profile extends Component {
           >
             Logout
           </button>
+
         </main>
       </div>
     );
