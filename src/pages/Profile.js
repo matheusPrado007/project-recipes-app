@@ -6,7 +6,13 @@ import Footer from '../components/Footer';
 class Profile extends Component {
   render() {
     const { history } = this.props;
+
     const getLocalStorage = JSON.parse(localStorage.getItem('user'));
+
+    const handleClick = () => {
+      localStorage.clear();
+      history.push('/');
+    };
     return (
       <div>
         <Header history={ history } />
@@ -33,6 +39,7 @@ class Profile extends Component {
           <button
             type="button"
             data-testid="profile-logout-btn"
+            onClick={ handleClick }
           >
             Logout
           </button>
