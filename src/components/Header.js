@@ -47,7 +47,7 @@ class Header extends React.Component {
       });
       break;
     default:
-      console.log(pathname);
+      // console.log(pathname);
     }
   }
 
