@@ -19,6 +19,7 @@ class Profile extends Component {
           <button
             type="button"
             data-testid="profile-done-btn"
+            onClick={ () => history.push('/done-recipes') }
           >
             Done Recipes
           </button>
@@ -46,6 +47,7 @@ Profile.propTypes = {
     location: PropTypes.shape({
       pathname: PropTypes.string,
     }).isRequired,
+    push: PropTypes.func,
   }).isRequired,
 };
 
