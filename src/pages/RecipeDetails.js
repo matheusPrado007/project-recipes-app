@@ -11,43 +11,39 @@ class RecipeDetails extends React.Component {
     this.state = {
       recipe: {},
       isMeal: true,
-      ingredientsAndMeasures,
+      ingredientsAndMeasures: [],
     };
   }
 
   async componentDidMount() {
+    const nine = 9;
+    const seventeen = 17;
+    const twentyNine = 29;
+    const thirtyTwo = 32;
     const { history: { location: { pathname } } } = this.props;
+    const ID = pathname.split('/')[2];
     if (pathname.includes('meals')) {
-      const ID = pathname.split('/')[2];
       const response = await mealDetailsByID(ID);
       const recomendationsResponse = await mealRecomendationsByID();
       const recipeDetails = response.meals[0];
-      const ingredientsEntries = Object.values(recipeDetails).slice(9, 29);
-      const measuresEntries = Object.values(recipeDetails).slice(29, 49);
-      // console.log(ingredientsEntries);
-      // console.log(measuresEntries);
-      const ingredientsAndMeasures = [];
-      ingredientsEntries
-        .forEach((value, index) => measuresEntries
-          .forEach((value2, index2) => {
-            if (index === index2) {
-              const obj = ({
-                [value]: value2,
-              });
-              ingredientsAndMeasures.push(obj);
-            }
-          }));
-      console.log(ingredientsAndMeasures);
+      const ingredientsEntries = Object.values(recipeDetails).slice(nine, twentyNine);
+      const measuresEntries = Object.values(recipeDetails).slice(twentyNine);
+      const ingredientsAndMeasures = this
+        .ingredientsAndMeasuresFunc(ingredientsEntries, measuresEntries);
       this.setState({
         recipe: recipeDetails,
         isMeal: true,
         ingredientsAndMeasures,
       });
     } else {
-      const ID = pathname.split('/')[2];
       const response = await cocktailDetailsByID(ID);
       const recomendationsResponse = await cocktailRecomendationsByID();
       const recipeDetails = response.drinks[0];
+      const ingredientsEntries = Object.values(recipeDetails).slice(21, 36);
+      const measuresEntries = Object.values(recipeDetails).slice(36);
+      const ingredientsAndMeasures = this
+        .ingredientsAndMeasuresFunc(ingredientsEntries, measuresEntries);
+      console.log(ingredientsAndMeasures);
       this.setState({
         recipe: recipeDetails,
         isMeal: false,
@@ -55,6 +51,21 @@ class RecipeDetails extends React.Component {
       });
     }
   }
+
+  ingredientsAndMeasuresFunc = (ingredientsArray, measuresArray) => {
+    const ingredientsAndMeasures = [];
+    ingredientsArray
+      .forEach((value, index) => measuresArray
+        .forEach((value2, index2) => {
+          if (index === index2) {
+            const obj = ({
+              [value]: value2,
+            });
+            ingredientsAndMeasures.push(obj);
+          }
+        }));
+    return ingredientsAndMeasures;
+  };
 
   render() {
     const { recipe, isMeal, ingredientsAndMeasures } = this.state;
@@ -67,11 +78,21 @@ class RecipeDetails extends React.Component {
           >
             { isMeal ? recipe.strMeal : recipe.strDrink }
           </h2>
-          <h6
-            data-testid="recipe-category"
-          >
-            { recipe.strCategory }
-          </h6>
+          {isMeal
+            ? (
+              <h5
+                data-testid="recipe-category"
+              >
+                { recipe.strCategory }
+              </h5>
+            )
+            : (
+              <h5
+                data-testid="recipe-category"
+              >
+                { `${recipe.strCategory}, ${recipe.strAlcoholic}` }
+              </h5>
+            )}
           <img
             style={ { maxHeight: '200px' } }
             data-testid="recipe-photo"
@@ -85,14 +106,17 @@ class RecipeDetails extends React.Component {
           </p>
           <ul>
             { ingredientsAndMeasures
-              && ingredientsAndMeasures.map((entry, index) => (
-                <li
-                  data-testid={ `${index}-ingredient-name-and-measure` }
-                  key={ entry }
-                >
-                  {entry}
-                </li>
-              ))}
+              && (ingredientsAndMeasures)
+                // .filter((ingredientAndMeasure) => Object
+                //   .keys(ingredientAndMeasure) !== null)
+                .map((entry, index) => (
+                  <li
+                    data-testid={ `${index}-ingredient-name-and-measure` }
+                    key={ Object.keys(entry) }
+                  >
+                    { `${Object.keys(entry)}, ${Object.values(entry)}` }
+                  </li>
+                ))}
           </ul>
           {
             isMeal
