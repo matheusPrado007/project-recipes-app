@@ -1,9 +1,11 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { mealDetailsByID,
   cocktailDetailsByID,
-  mealRecomendationsByID,
-  cocktailRecomendationsByID,
+  // mealRecomendationsByID,
+  // cocktailRecomendationsByID,
 } from '../Services/DetailsAPI';
+import '../css/StartRecipeBtn.css';
 
 class RecipeDetails extends React.Component {
   constructor() {
@@ -24,7 +26,7 @@ class RecipeDetails extends React.Component {
     const ID = pathname.split('/')[2];
     if (pathname.includes('meals')) {
       const response = await mealDetailsByID(ID);
-      const recomendationsResponse = await mealRecomendationsByID();
+      // const recomendationsResponse = await mealRecomendationsByID();
       const recipeDetails = response.meals[0];
       const ingredientsEntries = Object.values(recipeDetails).slice(nine, twentyNine);
       const measuresEntries = Object.values(recipeDetails).slice(twentyNine);
@@ -37,10 +39,10 @@ class RecipeDetails extends React.Component {
       });
     } else {
       const response = await cocktailDetailsByID(ID);
-      const recomendationsResponse = await cocktailRecomendationsByID();
+      // const recomendationsResponse = await cocktailRecomendationsByID();
       const recipeDetails = response.drinks[0];
-      const ingredientsEntries = Object.values(recipeDetails).slice(21, 36);
-      const measuresEntries = Object.values(recipeDetails).slice(36);
+      const ingredientsEntries = Object.values(recipeDetails).slice(seventeen, thirtyTwo);
+      const measuresEntries = Object.values(recipeDetails).slice(thirtyTwo);
       const ingredientsAndMeasures = this
         .ingredientsAndMeasuresFunc(ingredientsEntries, measuresEntries);
       console.log(ingredientsAndMeasures);
@@ -57,7 +59,9 @@ class RecipeDetails extends React.Component {
     ingredientsArray
       .forEach((value, index) => measuresArray
         .forEach((value2, index2) => {
-          if (index === index2) {
+          if (index === index2
+            && value2 !== '' && value2 !== null
+          ) {
             const obj = ({
               [value]: value2,
             });
@@ -69,6 +73,8 @@ class RecipeDetails extends React.Component {
 
   render() {
     const { recipe, isMeal, ingredientsAndMeasures } = this.state;
+    const { history: { location: { pathname } } } = this.props;
+    const ID = pathname.split('/')[2];
     return (
       <body>
         <h2
@@ -133,6 +139,29 @@ class RecipeDetails extends React.Component {
                 allowFullScreen
               />
         }
+        {isMeal
+          ? (
+            <Link to={ `/meals/${ID}/in-progress` }>
+              <button
+                className="startRecipe"
+                type="button"
+                data-testid="start-recipe-btn"
+              >
+                StartRecipe
+              </button>
+            </Link>
+          )
+          : (
+            <Link to={ `/drinks/${ID}/in-progress` }>
+              <button
+                className="startRecipe"
+                type="button"
+                data-testid="start-recipe-btn"
+              >
+                StartRecipe
+              </button>
+            </Link>
+          )}
       </body>
     );
   }
