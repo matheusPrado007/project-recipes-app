@@ -14,6 +14,7 @@ class RecipeDetails extends React.Component {
       recipe: {},
       isMeal: true,
       ingredientsAndMeasures: [],
+      recomendations: [],
     };
   }
 
@@ -27,29 +28,31 @@ class RecipeDetails extends React.Component {
     if (pathname.includes('meals')) {
       const response = await mealDetailsByID(ID);
       const recomendationsResponse = await mealRecomendationsByID();
-      const recipeDetails = response.meals[0];
-      const ingredientsEntries = Object.values(recipeDetails).slice(nine, twentyNine);
-      const measuresEntries = Object.values(recipeDetails).slice(twentyNine);
+      console.log(recomendationsResponse.drinks);
       const ingredientsAndMeasures = this
-        .ingredientsAndMeasuresFunc(ingredientsEntries, measuresEntries);
+        .ingredientsAndMeasuresFunc(
+          Object.values(response.meals[0]).slice(nine, twentyNine),
+          Object.values(response.meals[0]).slice(twentyNine),
+        );
       this.setState({
-        recipe: recipeDetails,
+        recipe: response.meals[0],
         isMeal: true,
         ingredientsAndMeasures,
+        recomendations: recomendationsResponse.drinks,
       });
     } else {
       const response = await cocktailDetailsByID(ID);
       const recomendationsResponse = await cocktailRecomendationsByID();
-      const recipeDetails = response.drinks[0];
-      const ingredientsEntries = Object.values(recipeDetails).slice(seventeen, thirtyTwo);
-      const measuresEntries = Object.values(recipeDetails).slice(thirtyTwo);
       const ingredientsAndMeasures = this
-        .ingredientsAndMeasuresFunc(ingredientsEntries, measuresEntries);
-      console.log(ingredientsAndMeasures);
+        .ingredientsAndMeasuresFunc(
+          Object.values(response.drinks[0]).slice(seventeen, thirtyTwo),
+          Object.values(response.drinks[0]).slice(thirtyTwo),
+        );
       this.setState({
-        recipe: recipeDetails,
+        recipe: response.drinks[0],
         isMeal: false,
         ingredientsAndMeasures,
+        recomendations: recomendationsResponse.meals,
       });
     }
   }
@@ -111,8 +114,6 @@ class RecipeDetails extends React.Component {
         <ul>
           { ingredientsAndMeasures
               && (ingredientsAndMeasures)
-                // .filter((ingredientAndMeasure) => Object
-                //   .keys(ingredientAndMeasure) !== null)
                 .map((entry, index) => (
                   <li
                     data-testid={ `${index}-ingredient-name-and-measure` }
