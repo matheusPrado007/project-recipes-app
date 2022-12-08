@@ -2,8 +2,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { mealDetailsByID,
   cocktailDetailsByID,
-  // mealRecomendationsByID,
-  // cocktailRecomendationsByID,
+  mealRecomendationsByID,
+  cocktailRecomendationsByID,
 } from '../Services/DetailsAPI';
 import '../css/StartRecipeBtn.css';
 
@@ -26,7 +26,7 @@ class RecipeDetails extends React.Component {
     const ID = pathname.split('/')[2];
     if (pathname.includes('meals')) {
       const response = await mealDetailsByID(ID);
-      // const recomendationsResponse = await mealRecomendationsByID();
+      const recomendationsResponse = await mealRecomendationsByID();
       const recipeDetails = response.meals[0];
       const ingredientsEntries = Object.values(recipeDetails).slice(nine, twentyNine);
       const measuresEntries = Object.values(recipeDetails).slice(twentyNine);
@@ -39,7 +39,7 @@ class RecipeDetails extends React.Component {
       });
     } else {
       const response = await cocktailDetailsByID(ID);
-      // const recomendationsResponse = await cocktailRecomendationsByID();
+      const recomendationsResponse = await cocktailRecomendationsByID();
       const recipeDetails = response.drinks[0];
       const ingredientsEntries = Object.values(recipeDetails).slice(seventeen, thirtyTwo);
       const measuresEntries = Object.values(recipeDetails).slice(thirtyTwo);
