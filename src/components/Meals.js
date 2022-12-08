@@ -1,12 +1,17 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { getDrinksAndFoods, getCategDrinksAndFoods } from '../redux/actions';
-import { getMealsApi, getCategoriesMeals } from '../Services/getAPI';
+import { getMealsApi, getCategoriesMeals, getFilter } from '../Services/getAPI';
 import Header from './Header';
 import Footer from './Footer';
 
 class Meals extends Component {
+  state = {
+    categories: '',
+  };
+
   componentDidMount() {
     this.fetchApi();
     this.mealsCategoriesApi();
@@ -28,45 +33,74 @@ class Meals extends Component {
     dispatch(getCategDrinksAndFoods(result.slice(0, five)));
   };
 
+  onClick = async ({ target }) => {
+    const { name } = target;
+    const { categories } = this.state;
+    if (name === categories) return this.handleClick();
+    this.setState({ categories: name });
+    const { dispatch } = this.props;
+    const twelve = 12;
+    const requestApi = await getFilter(name);
+    dispatch(getDrinksAndFoods(requestApi.slice(0, twelve)));
+  };
+
+  handleClick = async () => {
+    const { dispatch } = this.props;
+    const twelve = 12;
+    const { meals } = await getMealsApi();
+    dispatch(getDrinksAndFoods(meals.slice(0, twelve)));
+  };
+
   render() {
     const { foodsAndDrinks, getCategories } = this.props;
     const { history } = this.props;
     return (
       <div>
         <Header history={ history } />
-        Meals
         {
           getCategories.map((meal, index) => {
             const { strCategory } = meal;
             return (
               <button
-                type="button"
                 key={ index }
                 data-testid={ `${strCategory}-category-filter` }
+                type="button"
+                name={ strCategory }
+                onClick={ this.onClick }
               >
                 { strCategory }
               </button>
             );
           })
         }
+        <button
+          data-testid="All-category-filter"
+          type="button"
+          onClick={ this.handleClick }
+        >
+          All
+
+        </button>
         {
           foodsAndDrinks.map((meal, index) => {
             const { strMeal, strMealThumb } = meal;
             return (
-              <div
-                key={ index }
-                data-testid={ `${index}-recipe-card` }
-              >
-                <img
-                  data-testid={ `${index}-card-img` }
-                  src={ strMealThumb }
-                  alt="IMG"
-                  width="80px"
-                />
-                <h2 data-testid={ `${index}-card-name` }>
-                  {strMeal}
-                </h2>
-              </div>
+              <Link to={ `/meals/${meal.idMeal}` } key={ meal.idMeal }>
+                <div
+                  key={ index }
+                  data-testid={ `${index}-recipe-card` }
+                >
+                  <img
+                    data-testid={ `${index}-card-img` }
+                    src={ strMealThumb }
+                    alt="IMG"
+                    width="80px"
+                  />
+                  <h2 data-testid={ `${index}-card-name` }>
+                    {strMeal}
+                  </h2>
+                </div>
+              </Link>
             );
           })
         }
@@ -90,6 +124,7 @@ Meals.propTypes = {
   getCategories: PropTypes.shape({
     map: PropTypes.func,
     slice: PropTypes.func,
+    dispatch: PropTypes.func,
   }).isRequired,
   history: PropTypes.shape({
     location: PropTypes.shape({
