@@ -11,7 +11,7 @@ export const cocktailDetailsByID = async (id) => {
   const result = await api.json();
   return result;
 };
-// RECOMANDATIONS
+// RECOMENDATIONS
 export const mealRecomendationsByID = async () => {
   const api = await fetch('https://www.thecocktaildb.com/api/json/v1/1/search.php?s=');
   const result = await api.json();

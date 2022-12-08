@@ -70,42 +70,40 @@ class RecipeDetails extends React.Component {
   render() {
     const { recipe, isMeal, ingredientsAndMeasures } = this.state;
     return (
-      <>
-        {/* <h1>RecipeDetails</h1> */}
-        <>
-          <h2
-            data-testid="recipe-title"
-          >
-            { isMeal ? recipe.strMeal : recipe.strDrink }
-          </h2>
-          {isMeal
-            ? (
-              <h5
-                data-testid="recipe-category"
-              >
-                { recipe.strCategory }
-              </h5>
-            )
-            : (
-              <h5
-                data-testid="recipe-category"
-              >
-                { `${recipe.strCategory}, ${recipe.strAlcoholic}` }
-              </h5>
-            )}
-          <img
-            style={ { maxHeight: '200px' } }
-            data-testid="recipe-photo"
-            src={ isMeal ? recipe.strMealThumb : recipe.strDrinkThumb }
-            alt={ isMeal ? recipe.strMeal : recipe.strDrinkThumb }
-          />
-          <p
-            data-testid="instructions"
-          >
-            { recipe.strInstructions }
-          </p>
-          <ul>
-            { ingredientsAndMeasures
+      <body>
+        <h2
+          data-testid="recipe-title"
+        >
+          { isMeal ? recipe.strMeal : recipe.strDrink }
+        </h2>
+        {isMeal
+          ? (
+            <h5
+              data-testid="recipe-category"
+            >
+              { recipe.strCategory }
+            </h5>
+          )
+          : (
+            <h5
+              data-testid="recipe-category"
+            >
+              { `${recipe.strCategory}, ${recipe.strAlcoholic}` }
+            </h5>
+          )}
+        <img
+          style={ { maxHeight: '200px' } }
+          data-testid="recipe-photo"
+          src={ isMeal ? recipe.strMealThumb : recipe.strDrinkThumb }
+          alt={ isMeal ? recipe.strMeal : recipe.strDrinkThumb }
+        />
+        <p
+          data-testid="instructions"
+        >
+          { recipe.strInstructions }
+        </p>
+        <ul>
+          { ingredientsAndMeasures
               && (ingredientsAndMeasures)
                 // .filter((ingredientAndMeasure) => Object
                 //   .keys(ingredientAndMeasure) !== null)
@@ -117,9 +115,9 @@ class RecipeDetails extends React.Component {
                     { `${Object.keys(entry)}, ${Object.values(entry)}` }
                   </li>
                 ))}
-          </ul>
-          {
-            isMeal
+        </ul>
+        {
+          isMeal
               && <iframe
                 data-testid="video"
                 width="420"
@@ -134,10 +132,8 @@ class RecipeDetails extends React.Component {
                 picture-in-picture"
                 allowFullScreen
               />
-          }
-        </>
-        {/* )} */}
-      </>
+        }
+      </body>
     );
   }
 }
