@@ -10,6 +10,7 @@ class RecipeInProgress extends React.Component {
     super();
     this.state = {
       recipe: {},
+      // ingredientsAndMeasures,
     };
   }
 
@@ -18,24 +19,50 @@ class RecipeInProgress extends React.Component {
     if (pathname.includes('meals')) {
       const ID = pathname.split('/')[2];
       const response = await mealDetailsByID(ID);
-      const recipeDetails = response.meals;
+      const recipeDetails = response.meals[0];
       console.log(recipeDetails);
+      const NumberMinSlice = 9;
+      const NumberMaxSlice = 29;
+      const ingredientsEntries = Object.values(recipeDetails)
+        .slice(NumberMinSlice, NumberMaxSlice);
+      const ingredients = [];
+      ingredientsEntries.forEach((element) => {
+        if (element !== '' && element !== null) {
+          ingredients.push(element);
+        }
+      });
+      console.log(ingredients);
+
       this.setState({
         recipe: recipeDetails,
+        ingredients,
       });
     } else {
       const ID = pathname.split('/')[2];
       const response = await cocktailDetailsByID(ID);
-      const recipeDetails = response.drinks;
+      const recipeDetails = response.drinks[0];
       console.log(recipeDetails);
+      const NumberMinSlice = 17;
+      const NumberMaxSlice = 29;
+      const drinksEntries = Object.values(recipeDetails)
+        .slice(NumberMinSlice, NumberMaxSlice);
+      console.log(drinksEntries);
+      const drinks = [];
+      drinksEntries.forEach((element) => {
+        if (element !== '' && element !== null && element !== 'https://www.thecocktaildb.com/images/media/drink/zvsre31572902738.jpg') {
+          drinks.push(element);
+        }
+      });
       this.setState({
         recipe: recipeDetails,
+        drinks,
       });
     }
   }
 
   render() {
-    const { recipe } = this.state;
+    const { recipe, ingredients, drinks } = this.state;
+    const { history: { location: { pathname } } } = this.props;
 
     return (
       <div>
@@ -54,6 +81,18 @@ class RecipeInProgress extends React.Component {
                   alt={ recipe.strMeal }
                   data-testid="recipe-photo"
                 />
+                <br />
+                { ingredients
+                    && ingredients.map((el, i) => (
+                      <label
+                        key={ i }
+                        htmlFor="ingredient"
+                        data-testid={ `${i}-ingredient-step` }
+                      >
+                        <input type="checkbox" />
+                        {`${el}`}
+                      </label>
+                    ))}
                 <p data-testid="recipe-category">
                   { recipe.strCategory }
                 </p>
@@ -69,9 +108,7 @@ class RecipeInProgress extends React.Component {
                 <button type="button" data-testid="finish-recipe-btn">
                   Finalizar
                 </button>
-                <label htmlFor="checkbox">
-                  <input type="checkbox" />
-                </label>
+
               </div>
             )
             : (
@@ -84,16 +121,28 @@ class RecipeInProgress extends React.Component {
                 <p data-testid="recipe-category">
                   { recipe.strCategory }
                 </p>
-                <p>
-                  { recipe.strAlcoholic }
-                </p>
                 <img
                   src={ recipe.strDrinkThumb }
                   alt={ recipe.strDrink }
                   data-testid="recipe-photo"
                 />
+                <br />
+                { drinks
+                    && drinks.map((e, i) => (
+                      <label
+                        key={ i }
+                        htmlFor="drink-label"
+                        data-testid={ `${i}-ingredient-step` }
+                      >
+                        <input type="checkbox" />
+                        {`${e}`}
+                      </label>
+                    ))}
+                <p>
+                  { recipe.strAlcoholic }
+                </p>
                 <p data-testid="instructions">
-                  {}
+                  {recipe.strInstructions}
                 </p>
                 <button type="button" data-testid="share-btn">
                   Compartilhar
