@@ -1,5 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import AliceCarousel from 'react-alice-carousel';
+import 'react-alice-carousel/lib/alice-carousel.css';
 import { mealDetailsByID,
   cocktailDetailsByID,
   mealRecomendationsByID,
@@ -28,7 +30,7 @@ class RecipeDetails extends React.Component {
     if (pathname.includes('meals')) {
       const response = await mealDetailsByID(ID);
       const recomendationsResponse = await mealRecomendationsByID();
-      console.log(recomendationsResponse.drinks);
+      console.log(recomendationsResponse.drinks.slice(0, 6));
       const ingredientsAndMeasures = this
         .ingredientsAndMeasuresFunc(
           Object.values(response.meals[0]).slice(nine, twentyNine),
@@ -38,7 +40,7 @@ class RecipeDetails extends React.Component {
         recipe: response.meals[0],
         isMeal: true,
         ingredientsAndMeasures,
-        recomendations: recomendationsResponse.drinks,
+        recomendations: recomendationsResponse.drinks.slice(0, 6),
       });
     } else {
       const response = await cocktailDetailsByID(ID);
@@ -52,7 +54,7 @@ class RecipeDetails extends React.Component {
         recipe: response.drinks[0],
         isMeal: false,
         ingredientsAndMeasures,
-        recomendations: recomendationsResponse.meals,
+        recomendations: recomendationsResponse.meals.slice(0, 6),
       });
     }
   }
@@ -74,10 +76,34 @@ class RecipeDetails extends React.Component {
     return ingredientsAndMeasures;
   };
 
+  handleDragStart = (e) => e.preventDefault();
+
   render() {
-    const { recipe, isMeal, ingredientsAndMeasures } = this.state;
+    const { recipe, isMeal, ingredientsAndMeasures, recomendations } = this.state;
     const { history: { location: { pathname } } } = this.props;
     const ID = pathname.split('/')[2];
+    const res = { 360: { items: 2 } };
+    const items = recomendations.map((recomendation, index) => (
+      <Link
+        data-testid={ `${index}-recommendation-card` }
+        key={ isMeal ? recomendation.idDrink : recomendation.idMeal }
+        to={ isMeal ? `/drinks/${recomendation.idDrink}`
+          : `/meals/${recomendation.idDrink}` }
+      >
+        <img
+          style={ { maxHeight: '200px' } }
+          onDragStart={ this.handleDragStart }
+          src={ isMeal ? recomendation.strDrinkThumb : recomendation.strMealThumb }
+          alt={ isMeal ? recomendation.strDrink : recomendation.strMeaL }
+          role="presentation"
+        />
+        <span
+          data-testid={ `${index}-recommendation-title` }
+        >
+          { isMeal ? recomendation.strDrink : recomendation.strMeal }
+        </span>
+      </Link>
+    ));
     return (
       <body>
         <h2
@@ -127,8 +153,8 @@ class RecipeDetails extends React.Component {
           isMeal
               && <iframe
                 data-testid="video"
-                width="420"
-                height="315"
+                width="140"
+                height="105"
                 src={ recipe.strYoutube }
                 title="YouTube video player"
                 frameBorder="0"
@@ -163,6 +189,7 @@ class RecipeDetails extends React.Component {
               </button>
             </Link>
           )}
+        <AliceCarousel mouseTracking items={ items } responsive={ res } />
       </body>
     );
   }
