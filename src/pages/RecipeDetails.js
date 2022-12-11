@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import AliceCarousel from 'react-alice-carousel';
@@ -8,6 +9,7 @@ import { mealDetailsByID,
   cocktailRecomendationsByID,
 } from '../Services/DetailsAPI';
 import '../css/StartRecipeBtn.css';
+import RecommendationCard from '../components/RecommendationCard';
 
 class RecipeDetails extends React.Component {
   constructor() {
@@ -21,6 +23,7 @@ class RecipeDetails extends React.Component {
   }
 
   async componentDidMount() {
+    const six = 6;
     const nine = 9;
     const seventeen = 17;
     const twentyNine = 29;
@@ -30,7 +33,6 @@ class RecipeDetails extends React.Component {
     if (pathname.includes('meals')) {
       const response = await mealDetailsByID(ID);
       const recomendationsResponse = await mealRecomendationsByID();
-      console.log(recomendationsResponse.drinks.slice(0, 6));
       const ingredientsAndMeasures = this
         .ingredientsAndMeasuresFunc(
           Object.values(response.meals[0]).slice(nine, twentyNine),
@@ -40,7 +42,7 @@ class RecipeDetails extends React.Component {
         recipe: response.meals[0],
         isMeal: true,
         ingredientsAndMeasures,
-        recomendations: recomendationsResponse.drinks.slice(0, 6),
+        recomendations: recomendationsResponse.drinks.slice(0, six),
       });
     } else {
       const response = await cocktailDetailsByID(ID);
@@ -54,7 +56,7 @@ class RecipeDetails extends React.Component {
         recipe: response.drinks[0],
         isMeal: false,
         ingredientsAndMeasures,
-        recomendations: recomendationsResponse.meals.slice(0, 6),
+        recomendations: recomendationsResponse.meals.slice(0, six),
       });
     }
   }
@@ -76,34 +78,10 @@ class RecipeDetails extends React.Component {
     return ingredientsAndMeasures;
   };
 
-  handleDragStart = (e) => e.preventDefault();
-
   render() {
     const { recipe, isMeal, ingredientsAndMeasures, recomendations } = this.state;
     const { history: { location: { pathname } } } = this.props;
     const ID = pathname.split('/')[2];
-    const res = { 360: { items: 2 } };
-    const items = recomendations.map((recomendation, index) => (
-      <Link
-        data-testid={ `${index}-recommendation-card` }
-        key={ isMeal ? recomendation.idDrink : recomendation.idMeal }
-        to={ isMeal ? `/drinks/${recomendation.idDrink}`
-          : `/meals/${recomendation.idDrink}` }
-      >
-        <img
-          style={ { maxHeight: '200px' } }
-          onDragStart={ this.handleDragStart }
-          src={ isMeal ? recomendation.strDrinkThumb : recomendation.strMealThumb }
-          alt={ isMeal ? recomendation.strDrink : recomendation.strMeaL }
-          role="presentation"
-        />
-        <span
-          data-testid={ `${index}-recommendation-title` }
-        >
-          { isMeal ? recomendation.strDrink : recomendation.strMeal }
-        </span>
-      </Link>
-    ));
     return (
       <body>
         <h2
@@ -127,7 +105,7 @@ class RecipeDetails extends React.Component {
             </h5>
           )}
         <img
-          style={ { maxHeight: '200px' } }
+          style={ { maxHeight: '300px' } }
           data-testid="recipe-photo"
           src={ isMeal ? recipe.strMealThumb : recipe.strDrinkThumb }
           alt={ isMeal ? recipe.strMeal : recipe.strDrinkThumb }
@@ -137,7 +115,9 @@ class RecipeDetails extends React.Component {
         >
           { recipe.strInstructions }
         </p>
-        <ul>
+        <ul
+          aria-label="ingredients-and-measure"
+        >
           { ingredientsAndMeasures
               && (ingredientsAndMeasures)
                 .map((entry, index) => (
@@ -189,14 +169,30 @@ class RecipeDetails extends React.Component {
               </button>
             </Link>
           )}
-        <AliceCarousel mouseTracking items={ items } responsive={ res } />
+        <AliceCarousel
+          items={
+            recomendations.map((recomendation, index) => (
+              <RecommendationCard
+                key={ isMeal ? recomendation.idDrink : recomendation.idMeal }
+                recomendation={ recomendation }
+                index={ index }
+                isMeal={ isMeal }
+              />
+            ))
+          }
+          responsive={ { 360: { items: 2 } } }
+        />
       </body>
     );
   }
 }
 
 RecipeDetails.propTypes = {
-  // name: PropTypes.string
-}.isRequired;
+  history: PropTypes.shape({
+    location: PropTypes.shape({
+      pathname: PropTypes.string.isRequired,
+    }),
+  }).isRequired,
+};
 
 export default RecipeDetails;

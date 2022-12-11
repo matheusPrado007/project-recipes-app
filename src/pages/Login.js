@@ -25,7 +25,7 @@ class Login extends Component {
     const { email, password } = this.state;
     const emailRegex = /^[a-z0-9.]+@[a-z0-9]+\.[a-z]+$/i;
     const magicNumber = 7;
-    console.log(email);
+    // console.log(email);
     return (
       <div>
         {/* <Header history={ history } /> */}
