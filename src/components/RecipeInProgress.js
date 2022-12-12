@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { mealDetailsByID,
   cocktailDetailsByID,
 } from '../Services/DetailsAPI';
-// import Header from './Header';
+import '../css/RecipeInProgress.css';
 
 class RecipeInProgress extends React.Component {
   constructor() {
@@ -37,7 +37,7 @@ class RecipeInProgress extends React.Component {
         recipe: recipeDetails,
         ingredients,
       });
-    } else {
+    } else if (pathname.includes('drinks')) {
       const ID = pathname.split('/')[2];
       const response = await cocktailDetailsByID(ID);
       const recipeDetails = response.drinks[0];
@@ -60,13 +60,20 @@ class RecipeInProgress extends React.Component {
     }
   }
 
+  handleCheck = ({ target }) => {
+    if (target.checked) {
+      target.parentNode.classList.add('line');
+    } else {
+      target.parentNode.classList.remove('line');
+    }
+  };
+
   render() {
     const { recipe, ingredients, drinks } = this.state;
     const { history: { location: { pathname } } } = this.props;
 
     return (
       <div>
-        {/* <Header history={ history } /> */}
         {
           pathname.includes('meals')
             ? (
@@ -89,7 +96,12 @@ class RecipeInProgress extends React.Component {
                         htmlFor="ingredient"
                         data-testid={ `${i}-ingredient-step` }
                       >
-                        <input type="checkbox" />
+                        <input
+                          id="ingredient"
+                          type="checkbox"
+                          className="line"
+                          onChange={ this.handleCheck }
+                        />
                         {`${el}`}
                       </label>
                     ))}
@@ -134,7 +146,11 @@ class RecipeInProgress extends React.Component {
                         htmlFor="drink-label"
                         data-testid={ `${i}-ingredient-step` }
                       >
-                        <input type="checkbox" />
+                        <input
+                          type="checkbox"
+                          className="line"
+                          onChange={ this.handleCheck }
+                        />
                         {`${e}`}
                       </label>
                     ))}
