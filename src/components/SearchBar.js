@@ -1,5 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { getDrinksAndFoods } from '../redux/actions';
 import { filterMealsByIngredient, filterMealsByName,
   filterMealsByFistLetter, filterDrinksByIngredient, filterDrinksByName,
   filterDrinksByFistLetter } from '../services/filtersApi';
@@ -69,7 +71,7 @@ class SearchBar extends React.Component {
   };
 
   searchButton = async () => {
-    const { location: { pathname }, history: { push } } = this.props;
+    const { history: { push, location: { pathname } }, dispatch } = this.props;
 
     if (pathname === '/meals') {
       const filter = await this.filtersIfMeals();
@@ -79,20 +81,24 @@ class SearchBar extends React.Component {
         global.alert('Sorry, we haven\'t found any recipes for these filters.');
       } else if (result.length === 1) {
         push(`/meals/${result[0].idMeal}`);
+      } else {
+        const twelve = 12;
+        dispatch(getDrinksAndFoods(result.slice(0, twelve)));
       }
-
-      console.log(result);
     }
 
     if (pathname === '/drinks') {
       const filter = await this.filtersIfDrinks();
       const result = filter.drinks;
 
-      if (result.length === 1) {
+      if (!result) {
+        global.alert('Sorry, we haven\'t found any recipes for these filters.');
+      } else if (result.length === 1) {
         push(`/drinks/${result[0].idDrink}`);
+      } else {
+        const twelve = 12;
+        dispatch(getDrinksAndFoods(result.slice(0, twelve)));
       }
-
-      console.log(result);
     }
   };
 
@@ -163,6 +169,11 @@ class SearchBar extends React.Component {
 SearchBar.propTypes = {
   pathname: PropTypes.func,
   push: PropTypes.func,
+  dispatch: PropTypes.func,
 }.isRequired;
 
-export default SearchBar;
+const mapStateToProps = (state) => ({
+  foodsAndDrinks: state.drinksAndFoods.foodsAndDrinks,
+});
+
+export default connect(mapStateToProps)(SearchBar);
