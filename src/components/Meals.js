@@ -22,6 +22,7 @@ class Meals extends Component {
     const requestMealsApi = await getMealsApi();
     const result = requestMealsApi.meals;
     const twelve = 12;
+    console.log(result);
     dispatch(getDrinksAndFoods(result.slice(0, twelve)));
   };
 

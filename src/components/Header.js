@@ -72,6 +72,7 @@ class Header extends React.Component {
 
   render() {
     const { searching, pathName, noSearch } = this.state;
+    const { history } = this.props;
     return (
       <div>
         <h1
@@ -109,7 +110,7 @@ class Header extends React.Component {
               />
             </button>
           )}
-        { searching && <SearchBar />}
+        { searching && <SearchBar history={ history } />}
       </div>
     );
   }
