@@ -19,11 +19,14 @@ class RecipeDetails extends React.Component {
       isMeal: true,
       ingredientsAndMeasures: [],
       recomendations: [],
+      done: false,
+      inProgress: false,
     };
   }
 
   async componentDidMount() {
     this.isDoneHandler();
+    this.inProgressHandler();
     const six = 6;
     const nine = 9;
     const seventeen = 17;
@@ -62,8 +65,33 @@ class RecipeDetails extends React.Component {
     }
   }
 
-  isDoneHandler = () => {
-    console.log('done');
+  inProgressHandler = async () => {
+    const inProgressRecipes = await JSON.parse(localStorage.getItem('inProgressRecipes'));
+    const { history: { location: { pathname } } } = this.props;
+    const ID = Number(pathname.split('/')[2]);
+    if (inProgressRecipes) {
+      const inProgress = inProgressRecipes
+        .some((inProgressRecipe) => inProgressRecipe.id === ID);
+      this.setState({
+        inProgress,
+      });
+    } else {
+      localStorage.setItem('inProgressRecipes', '');
+    }
+  };
+
+  isDoneHandler = async () => {
+    const doneRecipes = await JSON.parse(localStorage.getItem('doneRecipes'));
+    const { history: { location: { pathname } } } = this.props;
+    const ID = Number(pathname.split('/')[2]);
+    if (doneRecipes) {
+      const done = doneRecipes.some((doneRecipe) => doneRecipe.id === ID);
+      this.setState({
+        done,
+      });
+    } else {
+      localStorage.setItem('doneRecipes', '');
+    }
   };
 
   ingredientsAndMeasuresFunc = (ingredientsArray, measuresArray) => {
@@ -84,28 +112,24 @@ class RecipeDetails extends React.Component {
   };
 
   render() {
-    const { recipe, isMeal, ingredientsAndMeasures, recomendations } = this.state;
+    const { recipe, done, isMeal,
+      inProgress, recomendations, ingredientsAndMeasures,
+    } = this.state;
     const { history: { location: { pathname } } } = this.props;
     const ID = pathname.split('/')[2];
     return (
       <body>
-        <h2
-          data-testid="recipe-title"
-        >
+        <h2 data-testid="recipe-title">
           { isMeal ? recipe.strMeal : recipe.strDrink }
         </h2>
         {isMeal
           ? (
-            <h5
-              data-testid="recipe-category"
-            >
+            <h5 data-testid="recipe-category">
               { recipe.strCategory }
             </h5>
           )
           : (
-            <h5
-              data-testid="recipe-category"
-            >
+            <h5 data-testid="recipe-category">
               { `${recipe.strCategory}, ${recipe.strAlcoholic}` }
             </h5>
           )}
@@ -115,14 +139,10 @@ class RecipeDetails extends React.Component {
           src={ isMeal ? recipe.strMealThumb : recipe.strDrinkThumb }
           alt={ isMeal ? recipe.strMeal : recipe.strDrinkThumb }
         />
-        <p
-          data-testid="instructions"
-        >
+        <p data-testid="instructions">
           { recipe.strInstructions }
         </p>
-        <ul
-          aria-label="ingredients-and-measure"
-        >
+        <ul aria-label="ingredients-and-measure">
           { ingredientsAndMeasures
               && (ingredientsAndMeasures)
                 .map((entry, index) => (
@@ -134,8 +154,7 @@ class RecipeDetails extends React.Component {
                   </li>
                 ))}
         </ul>
-        {
-          isMeal
+        {isMeal
               && <iframe
                 data-testid="video"
                 width="140"
@@ -149,32 +168,33 @@ class RecipeDetails extends React.Component {
                 gyroscope;
                 picture-in-picture"
                 allowFullScreen
-              />
-        }
+              />}
         {isMeal
-          ? (
-            <Link to={ `/meals/${ID}/in-progress` }>
-              <button
-                className="startRecipe"
-                type="button"
-                data-testid="start-recipe-btn"
-              >
-                StartRecipe
-              </button>
-            </Link>
-          )
-          : (
-            <Link to={ `/drinks/${ID}/in-progress` }>
-              <button
-                className="startRecipe"
-                type="button"
-                data-testid="start-recipe-btn"
-              >
-                StartRecipe
-              </button>
-            </Link>
-          )}
+          ? (!done
+              && (
+                <Link to={ `/meals/${ID}/in-progress` }>
+                  <button
+                    className="startRecipe"
+                    type="button"
+                    data-testid="start-recipe-btn"
+                  >
+                    {!inProgress ? 'StartRecipe' : 'Continue Recipe'}
+                  </button>
+                </Link>))
+          : (!done
+            && (
+              <Link to={ `/drinks/${ID}/in-progress` }>
+                <button
+                  className="startRecipe"
+                  type="button"
+                  data-testid="start-recipe-btn"
+                >
+                  {!inProgress ? 'StartRecipe' : 'Continue Recipe'}
+                </button>
+              </Link>
+            ))}
         <AliceCarousel
+          responsive={ { 360: { items: 2 } } }
           items={
             recomendations.map((recomendation, index) => (
               <RecommendationCard
@@ -182,10 +202,8 @@ class RecipeDetails extends React.Component {
                 recomendation={ recomendation }
                 index={ index }
                 isMeal={ isMeal }
-              />
-            ))
+              />))
           }
-          responsive={ { 360: { items: 2 } } }
         />
       </body>
     );
