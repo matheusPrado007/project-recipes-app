@@ -1,0 +1,15 @@
+.startRecipe {
+  bottom: 0;
+  position: fixed;
+  /* left: -50%; */
+  position: right;
+  transform: translate(-50%, -50%);
+  /* right: -50%; */
+  text-align: center;
+  width: 80%;
+}
+
+.carouselLink {
+  /* --padding-right: 190px; */
+  max-width: 190px;
+}
