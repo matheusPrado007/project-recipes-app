@@ -23,6 +23,7 @@ class RecipeDetails extends React.Component {
   }
 
   async componentDidMount() {
+    this.isDoneHandler();
     const six = 6;
     const nine = 9;
     const seventeen = 17;
@@ -60,6 +61,10 @@ class RecipeDetails extends React.Component {
       });
     }
   }
+
+  isDoneHandler = () => {
+    console.log('done');
+  };
 
   ingredientsAndMeasuresFunc = (ingredientsArray, measuresArray) => {
     const ingredientsAndMeasures = [];
