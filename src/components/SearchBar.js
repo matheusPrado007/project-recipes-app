@@ -28,45 +28,33 @@ class SearchBar extends React.Component {
 
   filtersIfMeals = async () => {
     const { selectedOption, search } = this.state;
-    if (selectedOption === 'Ingredient') {
-      const fetch = await filterMealsByIngredient(search);
-      return fetch;
-    }
-
-    if (selectedOption === 'Name') {
-      const fetch = await filterMealsByName(search);
-      return fetch;
-    }
-
-    if (selectedOption === 'fistLetter' && search.length === 1) {
-      const fetch = await filterMealsByFistLetter(search);
-      return fetch;
-    }
-
     if (selectedOption === 'fistLetter' && search.length !== 1) {
       global.alert('Your search must have only 1 (one) character');
+    } else if (selectedOption === 'fistLetter' && search.length === 1) {
+      const fetch = await filterMealsByFistLetter(search);
+      return fetch;
+    } else if (selectedOption === 'Name') {
+      const fetch = await filterMealsByName(search);
+      return fetch;
+    } else if (selectedOption === 'Ingredient') {
+      const fetch = await filterMealsByIngredient(search);
+      return fetch;
     }
   };
 
   filtersIfDrinks = async () => {
     const { selectedOption, search } = this.state;
-    if (selectedOption === 'Ingredient') {
-      const fetch = await filterDrinksByIngredient(search);
-      return fetch;
-    }
-
-    if (selectedOption === 'Name') {
-      const fetch = await filterDrinksByName(search);
-      return fetch;
-    }
-
-    if (selectedOption === 'fistLetter' && search.length === 1) {
-      const fetch = await filterDrinksByFistLetter(search);
-      return fetch;
-    }
-
     if (selectedOption === 'fistLetter' && search.length !== 1) {
       global.alert('Your search must have only 1 (one) character');
+    } else if (selectedOption === 'fistLetter' && search.length === 1) {
+      const fetch = await filterDrinksByFistLetter(search);
+      return fetch;
+    } else if (selectedOption === 'Name') {
+      const fetch = await filterDrinksByName(search);
+      return fetch;
+    } else if (selectedOption === 'Ingredient') {
+      const fetch = await filterDrinksByIngredient(search);
+      return fetch;
     }
   };
 
