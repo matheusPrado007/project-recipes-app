@@ -77,9 +77,7 @@ class DrinkDetails extends React.Component {
 
   render() {
     const { clickShare, favorited } = this.state;
-    const { recipe, done, inProgress,
-      ingredientsAndMeasures, ID,
-    } = this.props;
+    const { recipe, ingredientsAndMeasures } = this.props;
     return (
       <body>
         <h2 data-testid="recipe-title">
@@ -130,17 +128,6 @@ class DrinkDetails extends React.Component {
                   </li>
                 ))}
         </ul>
-        {!done
-              && (
-                <a href={ `/drinks/${ID}/in-progress` }>
-                  <button
-                    className="startRecipe"
-                    type="button"
-                    data-testid="start-recipe-btn"
-                  >
-                    {!inProgress ? 'StartRecipe' : 'Continue Recipe'}
-                  </button>
-                </a>)}
       </body>
     );
   }
@@ -148,8 +135,6 @@ class DrinkDetails extends React.Component {
 
 DrinkDetails.propTypes = {
   ID: PropTypes.string.isRequired,
-  done: PropTypes.bool.isRequired,
-  inProgress: PropTypes.bool.isRequired,
   ingredientsAndMeasures: PropTypes.arrayOf(PropTypes.shape).isRequired,
   recipe: PropTypes.shape({
     strAlcoholic: PropTypes.string,
