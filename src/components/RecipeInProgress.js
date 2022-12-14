@@ -10,17 +10,17 @@ class RecipeInProgress extends React.Component {
     super();
     this.state = {
       recipe: {},
-      // ingredientsAndMeasures,
+      checkbox: [],
     };
   }
 
   async componentDidMount() {
+    this.newFunc();
     const { history: { location: { pathname } } } = this.props;
     if (pathname.includes('meals')) {
       const ID = pathname.split('/')[2];
       const response = await mealDetailsByID(ID);
       const recipeDetails = response.meals[0];
-      console.log(recipeDetails);
       const NumberMinSlice = 9;
       const NumberMaxSlice = 29;
       const ingredientsEntries = Object.values(recipeDetails)
@@ -31,13 +31,12 @@ class RecipeInProgress extends React.Component {
           ingredients.push(element);
         }
       });
-      console.log(ingredients);
 
       this.setState({
         recipe: recipeDetails,
         ingredients,
       });
-    } else if (pathname.includes('drinks')) {
+    } else {
       const ID = pathname.split('/')[2];
       const response = await cocktailDetailsByID(ID);
       const recipeDetails = response.drinks[0];
@@ -46,7 +45,6 @@ class RecipeInProgress extends React.Component {
       const NumberMaxSlice = 29;
       const drinksEntries = Object.values(recipeDetails)
         .slice(NumberMinSlice, NumberMaxSlice);
-      console.log(drinksEntries);
       const drinks = [];
       drinksEntries.forEach((element) => {
         if (element !== '' && element !== null && element !== 'https://www.thecocktaildb.com/images/media/drink/zvsre31572902738.jpg') {
@@ -68,10 +66,29 @@ class RecipeInProgress extends React.Component {
     }
   };
 
+  newFunc = async (a, b) => {
+    const { checkbox } = this.state;
+    const progress = a;
+    if (b === true) {
+      this.setState((prev) => ({ checkbox: [...prev.checkbox, progress] }));
+    } else {
+      const filterRemove = checkbox.filter((el) => el !== progress);
+      this.setState({ checkbox: filterRemove });
+    }
+  };
+
+  saveResults = async ({ target }) => {
+    const progress = target.name;
+    const check = target.checked;
+    await this.newFunc(progress, check);
+    const { checkbox } = this.state;
+    localStorage.setItem('inProgressRecipes', JSON.stringify(checkbox));
+  };
+
   render() {
     const { recipe, ingredients, drinks } = this.state;
     const { history: { location: { pathname } } } = this.props;
-
+    const local = JSON.parse(localStorage.getItem('inProgressRecipes')) || [];
     return (
       <div>
         {
@@ -100,7 +117,11 @@ class RecipeInProgress extends React.Component {
                           id="ingredient"
                           type="checkbox"
                           className="line"
+                          checked={ local !== [] && local.find((e) => e === el) }
+                          value={ el }
+                          name={ el }
                           onChange={ this.handleCheck }
+                          onClick={ this.saveResults }
                         />
                         {`${el}`}
                       </label>
@@ -149,7 +170,11 @@ class RecipeInProgress extends React.Component {
                         <input
                           type="checkbox"
                           className="line"
+                          value={ e }
+                          name={ e }
+                          checked={ local !== [] && local.find((a) => a === e) }
                           onChange={ this.handleCheck }
+                          onClick={ this.saveResults }
                         />
                         {`${e}`}
                       </label>
