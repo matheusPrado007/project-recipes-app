@@ -63,7 +63,7 @@ class SearchBar extends React.Component {
 
     if (pathname === '/meals') {
       const filter = await this.filtersIfMeals();
-      const result = filter.meals;
+      const result = filter?.meals;
 
       if (!result) {
         global.alert('Sorry, we haven\'t found any recipes for these filters.');
@@ -77,7 +77,7 @@ class SearchBar extends React.Component {
 
     if (pathname === '/drinks') {
       const filter = await this.filtersIfDrinks();
-      const result = filter.drinks;
+      const result = filter?.drinks;
 
       if (!result) {
         global.alert('Sorry, we haven\'t found any recipes for these filters.');
