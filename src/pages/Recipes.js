@@ -2,11 +2,12 @@ import PropTypes from 'prop-types';
 import Drinks from '../components/Drinks';
 import Meals from '../components/Meals';
 
-function Recipes({ history: { location: { pathname } } }) {
-  console.log(pathname);
+function Recipes({ history: { location: { pathname } }, history }) {
   return (
     <div>
-      {pathname === '/meals' ? <Meals /> : <Drinks /> }
+      {pathname === '/meals'
+        ? <Meals history={ history } /> : <Drinks history={ history } /> }
+
     </div>
   );
 }
