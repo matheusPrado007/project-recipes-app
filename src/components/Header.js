@@ -46,6 +46,12 @@ class Header extends React.Component {
         noSearch: true,
       });
       break;
+    case '/meals/:id/in-progress':
+      this.setState({
+        pathName: 'Recipes',
+        noSearch: true,
+      });
+      break;
     default:
       // console.log(pathname);
     }
@@ -66,6 +72,7 @@ class Header extends React.Component {
 
   render() {
     const { searching, pathName, noSearch } = this.state;
+    const { history } = this.props;
     return (
       <div>
         <h1
@@ -103,7 +110,7 @@ class Header extends React.Component {
               />
             </button>
           )}
-        { searching && <SearchBar />}
+        { searching && <SearchBar history={ history } />}
       </div>
     );
   }
