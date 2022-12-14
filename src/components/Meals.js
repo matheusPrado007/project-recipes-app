@@ -37,8 +37,9 @@ class Meals extends Component {
   onClick = async ({ target }) => {
     const { name } = target;
     const { categories } = this.state;
-    if (name === categories) return this.handleClick();
-    this.setState({ categories: name });
+    if (name === categories) {
+      return this.handleClick();
+    } this.setState({ categories: name });
     const { dispatch } = this.props;
     const twelve = 12;
     const requestApi = await getFilter(name);
