@@ -1,15 +1,20 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Link } from 'react-router-dom';
 import AliceCarousel from 'react-alice-carousel';
 import 'react-alice-carousel/lib/alice-carousel.css';
-import { mealDetailsByID,
-  cocktailDetailsByID,
-  mealRecomendationsByID,
-  cocktailRecomendationsByID,
-} from '../Services/DetailsAPI';
+import { mealDetailsByID, cocktailDetailsByID, mealRecomendationsByID,
+  cocktailRecomendationsByID } from '../Services/DetailsAPI';
 import '../css/StartRecipeBtn.css';
 import RecommendationCard from '../components/RecommendationCard';
+import ingredientsAndMeasuresFunc from '../Services/Helpers';
+import MealDetails from '../components/MealDetails';
+import DrinkDetails from '../components/DrinkDetails';
+
+const six = 6;
+const nine = 9;
+const seventeen = 17;
+const twentyNine = 29;
+const thirtyTwo = 32;
 
 class RecipeDetails extends React.Component {
   constructor() {
@@ -19,26 +24,24 @@ class RecipeDetails extends React.Component {
       isMeal: true,
       ingredientsAndMeasures: [],
       recomendations: [],
+      done: false,
+      inProgress: false,
     };
   }
 
   async componentDidMount() {
+    this.createInProgressStorage();
     this.isDoneHandler();
-    const six = 6;
-    const nine = 9;
-    const seventeen = 17;
-    const twentyNine = 29;
-    const thirtyTwo = 32;
+    this.inProgressHandler();
     const { history: { location: { pathname } } } = this.props;
     const ID = pathname.split('/')[2];
     if (pathname.includes('meals')) {
       const response = await mealDetailsByID(ID);
       const recomendationsResponse = await mealRecomendationsByID();
-      const ingredientsAndMeasures = this
-        .ingredientsAndMeasuresFunc(
-          Object.values(response.meals[0]).slice(nine, twentyNine),
-          Object.values(response.meals[0]).slice(twentyNine),
-        );
+      const ingredientsAndMeasures = ingredientsAndMeasuresFunc(
+        Object.values(response.meals[0]).slice(nine, twentyNine),
+        Object.values(response.meals[0]).slice(twentyNine),
+      );
       this.setState({
         recipe: response.meals[0],
         isMeal: true,
@@ -48,11 +51,10 @@ class RecipeDetails extends React.Component {
     } else {
       const response = await cocktailDetailsByID(ID);
       const recomendationsResponse = await cocktailRecomendationsByID();
-      const ingredientsAndMeasures = this
-        .ingredientsAndMeasuresFunc(
-          Object.values(response.drinks[0]).slice(seventeen, thirtyTwo),
-          Object.values(response.drinks[0]).slice(thirtyTwo),
-        );
+      const ingredientsAndMeasures = ingredientsAndMeasuresFunc(
+        Object.values(response.drinks[0]).slice(seventeen, thirtyTwo),
+        Object.values(response.drinks[0]).slice(thirtyTwo),
+      );
       this.setState({
         recipe: response.drinks[0],
         isMeal: false,
@@ -62,119 +64,78 @@ class RecipeDetails extends React.Component {
     }
   }
 
-  isDoneHandler = () => {
-    console.log('done');
+  createInProgressStorage = () => {
+    const inProgressRecipes = localStorage.getItem('inProgressRecipes');
+    if (!inProgressRecipes) {
+      const favorite = [];
+      const stringfyed = JSON.stringify(favorite);
+      localStorage.setItem('inProgressRecipes', stringfyed);
+    }
   };
 
-  ingredientsAndMeasuresFunc = (ingredientsArray, measuresArray) => {
-    const ingredientsAndMeasures = [];
-    ingredientsArray
-      .forEach((value, index) => measuresArray
-        .forEach((value2, index2) => {
-          if (index === index2
-            && value2 !== '' && value2 !== null && value !== ''
-          ) {
-            const obj = ({
-              [value]: value2,
-            });
-            ingredientsAndMeasures.push(obj);
-          }
-        }));
-    return ingredientsAndMeasures;
+  inProgressHandler = async () => {
+    const { history: { location: { pathname } } } = this.props;
+    const ID = Number(pathname.split('/')[2]);
+    const inProgressRecipes = await JSON.parse(localStorage.getItem('inProgressRecipes'));
+    if (pathname.includes('meals')) {
+      const inProgress = inProgressRecipes
+        .some((inProgressRecipe) => Number(inProgressRecipe.meals.id) === ID);
+      this.setState({
+        inProgress,
+      });
+    } else {
+      const inProgress = inProgressRecipes
+        .some((inProgressRecipe) => Number(inProgressRecipe.drinks.id) === ID);
+      this.setState({
+        inProgress,
+      });
+    }
+  };
+
+  isDoneHandler = async () => {
+    const doneRecipes = await JSON.parse(localStorage.getItem('doneRecipes'));
+    const { history: { location: { pathname } } } = this.props;
+    const ID = Number(pathname.split('/')[2]);
+    if (doneRecipes) {
+      const done = doneRecipes.some((doneRecipe) => Number(doneRecipe.id) === ID);
+      this.setState({
+        done,
+      });
+    } else {
+      const done = [];
+      const stringfyed = JSON.stringify(done);
+      localStorage.setItem('doneRecipes', stringfyed);
+    }
   };
 
   render() {
-    const { recipe, isMeal, ingredientsAndMeasures, recomendations } = this.state;
+    const { recipe, done, isMeal,
+      inProgress, recomendations, ingredientsAndMeasures,
+    } = this.state;
     const { history: { location: { pathname } } } = this.props;
     const ID = pathname.split('/')[2];
     return (
       <body>
-        <h2
-          data-testid="recipe-title"
-        >
-          { isMeal ? recipe.strMeal : recipe.strDrink }
-        </h2>
-        {isMeal
+        { isMeal
           ? (
-            <h5
-              data-testid="recipe-category"
-            >
-              { recipe.strCategory }
-            </h5>
-          )
+            <MealDetails
+              recipe={ recipe }
+              inProgress={ inProgress }
+              ingredientsAndMeasures={ ingredientsAndMeasures }
+              done={ done }
+              ID={ ID }
+            />)
           : (
-            <h5
-              data-testid="recipe-category"
-            >
-              { `${recipe.strCategory}, ${recipe.strAlcoholic}` }
-            </h5>
-          )}
-        <img
-          style={ { maxHeight: '300px' } }
-          data-testid="recipe-photo"
-          src={ isMeal ? recipe.strMealThumb : recipe.strDrinkThumb }
-          alt={ isMeal ? recipe.strMeal : recipe.strDrinkThumb }
-        />
-        <p
-          data-testid="instructions"
-        >
-          { recipe.strInstructions }
-        </p>
-        <ul
-          aria-label="ingredients-and-measure"
-        >
-          { ingredientsAndMeasures
-              && (ingredientsAndMeasures)
-                .map((entry, index) => (
-                  <li
-                    data-testid={ `${index}-ingredient-name-and-measure` }
-                    key={ Object.keys(entry) }
-                  >
-                    { `${Object.keys(entry)}, ${Object.values(entry)}` }
-                  </li>
-                ))}
-        </ul>
-        {
-          isMeal
-              && <iframe
-                data-testid="video"
-                width="140"
-                height="105"
-                src={ recipe.strYoutube }
-                title="YouTube video player"
-                frameBorder="0"
-                allow="accelerometer;
-                clipboard-write;
-                encrypted-media;
-                gyroscope;
-                picture-in-picture"
-                allowFullScreen
-              />
-        }
-        {isMeal
-          ? (
-            <Link to={ `/meals/${ID}/in-progress` }>
-              <button
-                className="startRecipe"
-                type="button"
-                data-testid="start-recipe-btn"
-              >
-                StartRecipe
-              </button>
-            </Link>
-          )
-          : (
-            <Link to={ `/drinks/${ID}/in-progress` }>
-              <button
-                className="startRecipe"
-                type="button"
-                data-testid="start-recipe-btn"
-              >
-                StartRecipe
-              </button>
-            </Link>
+            <DrinkDetails
+              recipe={ recipe }
+              inProgress={ inProgress }
+              ingredientsAndMeasures={ ingredientsAndMeasures }
+              done={ done }
+              ID={ ID }
+            />
           )}
         <AliceCarousel
+          responsive={ { 360: { items: 2 } } }
           items={
             recomendations.map((recomendation, index) => (
               <RecommendationCard
@@ -182,10 +143,8 @@ class RecipeDetails extends React.Component {
                 recomendation={ recomendation }
                 index={ index }
                 isMeal={ isMeal }
-              />
-            ))
+              />))
           }
-          responsive={ { 360: { items: 2 } } }
         />
       </body>
     );
