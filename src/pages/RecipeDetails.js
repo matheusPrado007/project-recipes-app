@@ -30,6 +30,7 @@ class RecipeDetails extends React.Component {
   }
 
   async componentDidMount() {
+    this.createInProgressStorage();
     this.isDoneHandler();
     this.inProgressHandler();
     const { history: { location: { pathname } } } = this.props;
@@ -63,20 +64,31 @@ class RecipeDetails extends React.Component {
     }
   }
 
+  createInProgressStorage = () => {
+    const inProgressRecipes = localStorage.getItem('inProgressRecipes');
+    if (!inProgressRecipes) {
+      const favorite = [];
+      const stringfyed = JSON.stringify(favorite);
+      localStorage.setItem('inProgressRecipes', stringfyed);
+    }
+  };
+
   inProgressHandler = async () => {
-    const inProgressRecipes = await JSON.parse(localStorage.getItem('inProgressRecipes'));
     const { history: { location: { pathname } } } = this.props;
     const ID = Number(pathname.split('/')[2]);
-    if (inProgressRecipes) {
+    const inProgressRecipes = await JSON.parse(localStorage.getItem('inProgressRecipes'));
+    if (pathname.includes('meals')) {
       const inProgress = inProgressRecipes
-        .some((inProgressRecipe) => inProgressRecipe.id === ID);
+        .some((inProgressRecipe) => Number(inProgressRecipe.meals.id) === ID);
       this.setState({
         inProgress,
       });
     } else {
-      const inProgress = [];
-      const stringfyed = JSON.stringify(inProgress);
-      localStorage.setItem('inProgressRecipes', stringfyed);
+      const inProgress = inProgressRecipes
+        .some((inProgressRecipe) => Number(inProgressRecipe.drinks.id) === ID);
+      this.setState({
+        inProgress,
+      });
     }
   };
 
@@ -85,7 +97,7 @@ class RecipeDetails extends React.Component {
     const { history: { location: { pathname } } } = this.props;
     const ID = Number(pathname.split('/')[2]);
     if (doneRecipes) {
-      const done = doneRecipes.some((doneRecipe) => doneRecipe.id === ID);
+      const done = doneRecipes.some((doneRecipe) => Number(doneRecipe.id) === ID);
       this.setState({
         done,
       });

@@ -50,7 +50,6 @@ class MealDetails extends React.Component {
     const { recipe, ID } = this.props;
     const favoriteRecipes = localStorage.getItem('favoriteRecipes');
     const recipesArray = await JSON.parse(favoriteRecipes);
-    console.log(recipe);
     if (!favorited) {
       const favoritedRecipe = {
         id: ID,
@@ -144,11 +143,13 @@ class MealDetails extends React.Component {
         />
         {!done
               && (
-                <a href={ `/meals/${ID}/in-progress` }>
+                <a
+                  href={ `/meals/${ID}/in-progress` }
+                >
                   <button
+                    data-testid="start-recipe-btn"
                     className="startRecipe"
                     type="button"
-                    data-testid="start-recipe-btn"
                   >
                     {!inProgress ? 'StartRecipe' : 'Continue Recipe'}
                   </button>
