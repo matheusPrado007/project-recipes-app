@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Link } from 'react-router-dom';
+import clipboardCopy from 'clipboard-copy';
 import shareIcon from '../images/shareIcon.svg';
+import '../css/StartRecipeBtn.css';
 // import blackHeartIcon from '../images/blackHeartIcon.svg';
 import whiteHeartIcon from '../images/whiteHeartIcon.svg';
 
@@ -14,8 +15,13 @@ class MealDetails extends React.Component {
   }
 
   handleShare = () => {
-    clipboardCopy(`http://localhost:3000/meals/${id}`);
+    const { ID } = this.props;
+    clipboardCopy(`http://localhost:3000/meals/${ID}`);
     this.setState({ clickShare: true });
+  };
+
+  handleFavorite = () => {
+
   };
 
   render() {
@@ -51,7 +57,7 @@ class MealDetails extends React.Component {
         <button
           type="button"
           data-testid="favorite-btn"
-          // onClick={ () => { this.desfavoritar(id); } }
+          onClick={ this.handleFavorite() }
         >
           <img src={ whiteHeartIcon } alt="ícone de desfavoritar" />
         </button>
@@ -83,7 +89,7 @@ class MealDetails extends React.Component {
         />
         {!done
               && (
-                <Link to={ `/meals/${ID}/in-progress` }>
+                <a href={ `/meals/${ID}/in-progress` }>
                   <button
                     className="startRecipe"
                     type="button"
@@ -91,7 +97,7 @@ class MealDetails extends React.Component {
                   >
                     {!inProgress ? 'StartRecipe' : 'Continue Recipe'}
                   </button>
-                </Link>)}
+                </a>)}
       </body>
     );
   }

@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Link } from 'react-router-dom';
+import clipboardCopy from 'clipboard-copy';
 import shareIcon from '../images/shareIcon.svg';
-import blackHeartIcon from '../images/blackHeartIcon.svg';
+import '../css/StartRecipeBtn.css';
+// import blackHeartIcon from '../images/blackHeartIcon.svg';
 import whiteHeartIcon from '../images/whiteHeartIcon.svg';
 
 class DrinkDetails extends React.Component {
@@ -13,10 +14,42 @@ class DrinkDetails extends React.Component {
     };
   }
 
+  componentDidMount() {
+    this.createFavoriteStorage();
+  }
+
+  createFavoriteStorage = () => {
+    const favoriteRecipes = localStorage.getItem('favoriteRecipes');
+    if (!favoriteRecipes) {
+      const favorite = [];
+      const stringfyed = JSON.stringify(favorite);
+      localStorage.setItem('favoriteRecipes', stringfyed);
+    }
+  };
+
   handleShare = () => {
-    clipboardCopy(`http://localhost:3000/meals/${id}`);
+    const { ID } = this.props;
+    clipboardCopy(`http://localhost:3000/drinks/${ID}`);
     this.setState({ clickShare: true });
   };
+
+  handleFavorite = async () => {
+    const { recipe, ID } = this.props;
+    const favoriteRecipes = localStorage.getItem('favoriteRecipes');
+    const jsonRecipes = await JSON.parse(favoriteRecipes);
+    const favoritedRecipe = {
+      id: ID,
+      type: 'drink',
+      nationality: '',
+      category: recipe.strCategory,
+      alcoholicOrNot: recipe.strAlcoholic,
+      name: recipe.strDrink,
+      image: recipe.strDrinkThumb,
+    };
+    jsonRecipes.push(favoritedRecipe);
+    localStorage.setItem('favoriteRecipes', JSON.stringify(jsonRecipes));
+  };
+  // JÁ ESTÁ ADICIONANDO UMA NOVA RECEITA NOS FAVORITOS, FALTA IMPLEMENTAR A LÓGICA PARA NÃO ADICIONAR REPETIDA E DESFAVORITAR E FALTA REPETIR A LÓGICA NO MealDetails;
 
   render() {
     const { clickShare } = this.state;
@@ -51,7 +84,7 @@ class DrinkDetails extends React.Component {
         <button
           type="button"
           data-testid="favorite-btn"
-          // onClick={ () => { this.desfavoritar(id); } }
+          onClick={ this.handleFavorite }
         >
           <img src={ whiteHeartIcon } alt="ícone de desfavoritar" />
         </button>
@@ -72,7 +105,7 @@ class DrinkDetails extends React.Component {
         </ul>
         {!done
               && (
-                <Link to={ `/drinks/${ID}/in-progress` }>
+                <a href={ `/drinks/${ID}/in-progress` }>
                   <button
                     className="startRecipe"
                     type="button"
@@ -80,7 +113,7 @@ class DrinkDetails extends React.Component {
                   >
                     {!inProgress ? 'StartRecipe' : 'Continue Recipe'}
                   </button>
-                </Link>)}
+                </a>)}
       </body>
     );
   }

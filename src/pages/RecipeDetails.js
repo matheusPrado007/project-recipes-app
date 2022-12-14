@@ -74,7 +74,9 @@ class RecipeDetails extends React.Component {
         inProgress,
       });
     } else {
-      localStorage.setItem('inProgressRecipes', '');
+      const inProgress = [];
+      const stringfyed = JSON.stringify(inProgress);
+      localStorage.setItem('inProgressRecipes', stringfyed);
     }
   };
 
@@ -88,7 +90,9 @@ class RecipeDetails extends React.Component {
         done,
       });
     } else {
-      localStorage.setItem('doneRecipes', '');
+      const done = [];
+      const stringfyed = JSON.stringify(done);
+      localStorage.setItem('doneRecipes', stringfyed);
     }
   };
 
