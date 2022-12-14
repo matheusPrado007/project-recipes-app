@@ -77,9 +77,7 @@ class MealDetails extends React.Component {
 
   render() {
     const { clickShare, favorited } = this.state;
-    const { recipe, done, inProgress,
-      ingredientsAndMeasures, ID,
-    } = this.props;
+    const { recipe, ingredientsAndMeasures } = this.props;
     return (
       <body>
         <h2 data-testid="recipe-title">
@@ -141,19 +139,6 @@ class MealDetails extends React.Component {
                 gyroscope; picture-in-picture"
           allowFullScreen
         />
-        {!done
-              && (
-                <a
-                  href={ `/meals/${ID}/in-progress` }
-                >
-                  <button
-                    data-testid="start-recipe-btn"
-                    className="startRecipe"
-                    type="button"
-                  >
-                    {!inProgress ? 'StartRecipe' : 'Continue Recipe'}
-                  </button>
-                </a>)}
       </body>
     );
   }
@@ -161,8 +146,6 @@ class MealDetails extends React.Component {
 
 MealDetails.propTypes = {
   ID: PropTypes.string.isRequired,
-  done: PropTypes.bool.isRequired,
-  inProgress: PropTypes.bool.isRequired,
   ingredientsAndMeasures: PropTypes.arrayOf(PropTypes.shape).isRequired,
   recipe: PropTypes.shape({
     strCategory: PropTypes.string,

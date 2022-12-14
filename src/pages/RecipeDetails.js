@@ -67,8 +67,11 @@ class RecipeDetails extends React.Component {
   createInProgressStorage = () => {
     const inProgressRecipes = localStorage.getItem('inProgressRecipes');
     if (!inProgressRecipes) {
-      const favorite = [];
-      const stringfyed = JSON.stringify(favorite);
+      const inProgress = {
+        drinks: {},
+        meals: {},
+      };
+      const stringfyed = JSON.stringify(inProgress);
       localStorage.setItem('inProgressRecipes', stringfyed);
     }
   };
@@ -78,14 +81,15 @@ class RecipeDetails extends React.Component {
     const ID = Number(pathname.split('/')[2]);
     const inProgressRecipes = await JSON.parse(localStorage.getItem('inProgressRecipes'));
     if (pathname.includes('meals')) {
-      const inProgress = inProgressRecipes
-        .some((inProgressRecipe) => Number(inProgressRecipe.meals.id) === ID);
+      console.log(inProgressRecipes);
+      const inProgress = Object.keys(inProgressRecipes.meals)
+        .some((inProgressRecipe) => Number(inProgressRecipe) === ID);
       this.setState({
         inProgress,
       });
     } else {
-      const inProgress = inProgressRecipes
-        .some((inProgressRecipe) => Number(inProgressRecipe.drinks.id) === ID);
+      const inProgress = Object.keys(inProgressRecipes.drinks)
+        .some((inProgressRecipe) => Number(inProgressRecipe) === ID);
       this.setState({
         inProgress,
       });
@@ -146,6 +150,21 @@ class RecipeDetails extends React.Component {
               />))
           }
         />
+        {!done
+              && (
+                <a
+                  href={ isMeal
+                    ? `/meals/${ID}/in-progress`
+                    : `/drinks/${ID}/in-progress` }
+                >
+                  <button
+                    className="startRecipe"
+                    type="button"
+                    data-testid="start-recipe-btn"
+                  >
+                    {!inProgress ? 'StartRecipe' : 'Continue Recipe'}
+                  </button>
+                </a>)}
       </body>
     );
   }
