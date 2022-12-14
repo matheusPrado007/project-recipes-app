@@ -3,7 +3,7 @@ import React from 'react';
 import clipboardCopy from 'clipboard-copy';
 import shareIcon from '../images/shareIcon.svg';
 import '../css/StartRecipeBtn.css';
-// import blackHeartIcon from '../images/blackHeartIcon.svg';
+import blackHeartIcon from '../images/blackHeartIcon.svg';
 import whiteHeartIcon from '../images/whiteHeartIcon.svg';
 
 class MealDetails extends React.Component {
@@ -11,8 +11,33 @@ class MealDetails extends React.Component {
     super();
     this.state = {
       clickShare: false,
+      favorited: false,
     };
   }
+
+  componentDidMount() {
+    this.createFavoriteStorage();
+    this.checkFavorited();
+  }
+
+  createFavoriteStorage = () => {
+    const favoriteRecipes = localStorage.getItem('favoriteRecipes');
+    if (!favoriteRecipes) {
+      const favorite = [];
+      const stringfyed = JSON.stringify(favorite);
+      localStorage.setItem('favoriteRecipes', stringfyed);
+    }
+  };
+
+  checkFavorited = async () => {
+    const { ID } = this.props;
+    const favoriteRecipes = localStorage.getItem('favoriteRecipes');
+    const recipesArray = await JSON.parse(favoriteRecipes);
+    const favorited = recipesArray.some((recipe) => Number(recipe.id) === Number(ID));
+    this.setState({
+      favorited,
+    });
+  };
 
   handleShare = () => {
     const { ID } = this.props;
@@ -20,12 +45,39 @@ class MealDetails extends React.Component {
     this.setState({ clickShare: true });
   };
 
-  handleFavorite = () => {
-
+  handleFavorite = async () => {
+    const { favorited } = this.state;
+    const { recipe, ID } = this.props;
+    const favoriteRecipes = localStorage.getItem('favoriteRecipes');
+    const recipesArray = await JSON.parse(favoriteRecipes);
+    console.log(recipe);
+    if (!favorited) {
+      const favoritedRecipe = {
+        id: ID,
+        type: 'meal',
+        nationality: recipe.strArea,
+        category: recipe.strCategory,
+        alcoholicOrNot: '',
+        name: recipe.strMeal,
+        image: recipe.strMealThumb,
+      };
+      recipesArray.push(favoritedRecipe);
+      localStorage.setItem('favoriteRecipes', JSON.stringify(recipesArray));
+      this.setState({
+        favorited: true,
+      });
+    } else {
+      const newArray = recipesArray
+        .filter((recipeInTheArray) => Number(recipeInTheArray.id) !== Number(ID));
+      localStorage.setItem('favoriteRecipes', JSON.stringify(newArray));
+      this.setState({
+        favorited: false,
+      });
+    }
   };
 
   render() {
-    const { clickShare } = this.state;
+    const { clickShare, favorited } = this.state;
     const { recipe, done, inProgress,
       ingredientsAndMeasures, ID,
     } = this.props;
@@ -56,10 +108,13 @@ class MealDetails extends React.Component {
         </button>
         <button
           type="button"
-          data-testid="favorite-btn"
-          onClick={ this.handleFavorite() }
+          onClick={ this.handleFavorite }
         >
-          <img src={ whiteHeartIcon } alt="ícone de desfavoritar" />
+          <img
+            data-testid="favorite-btn"
+            src={ !favorited ? whiteHeartIcon : blackHeartIcon }
+            alt="ícone de favoritar"
+          />
         </button>
         <p data-testid="instructions">
           { recipe.strInstructions }
@@ -111,6 +166,7 @@ MealDetails.propTypes = {
   recipe: PropTypes.shape({
     strCategory: PropTypes.string,
     strInstructions: PropTypes.string,
+    strArea: PropTypes.string,
     strMeal: PropTypes.string,
     strMealThumb: PropTypes.string,
     strYoutube: PropTypes.string,

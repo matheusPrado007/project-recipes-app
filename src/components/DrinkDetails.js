@@ -3,7 +3,7 @@ import React from 'react';
 import clipboardCopy from 'clipboard-copy';
 import shareIcon from '../images/shareIcon.svg';
 import '../css/StartRecipeBtn.css';
-// import blackHeartIcon from '../images/blackHeartIcon.svg';
+import blackHeartIcon from '../images/blackHeartIcon.svg';
 import whiteHeartIcon from '../images/whiteHeartIcon.svg';
 
 class DrinkDetails extends React.Component {
@@ -11,11 +11,13 @@ class DrinkDetails extends React.Component {
     super();
     this.state = {
       clickShare: false,
+      favorited: false,
     };
   }
 
   componentDidMount() {
     this.createFavoriteStorage();
+    this.checkFavorited();
   }
 
   createFavoriteStorage = () => {
@@ -27,6 +29,16 @@ class DrinkDetails extends React.Component {
     }
   };
 
+  checkFavorited = async () => {
+    const { ID } = this.props;
+    const favoriteRecipes = localStorage.getItem('favoriteRecipes');
+    const recipesArray = await JSON.parse(favoriteRecipes);
+    const favorited = recipesArray.some((recipe) => Number(recipe.id) === Number(ID));
+    this.setState({
+      favorited,
+    });
+  };
+
   handleShare = () => {
     const { ID } = this.props;
     clipboardCopy(`http://localhost:3000/drinks/${ID}`);
@@ -34,25 +46,37 @@ class DrinkDetails extends React.Component {
   };
 
   handleFavorite = async () => {
+    const { favorited } = this.state;
     const { recipe, ID } = this.props;
     const favoriteRecipes = localStorage.getItem('favoriteRecipes');
-    const jsonRecipes = await JSON.parse(favoriteRecipes);
-    const favoritedRecipe = {
-      id: ID,
-      type: 'drink',
-      nationality: '',
-      category: recipe.strCategory,
-      alcoholicOrNot: recipe.strAlcoholic,
-      name: recipe.strDrink,
-      image: recipe.strDrinkThumb,
-    };
-    jsonRecipes.push(favoritedRecipe);
-    localStorage.setItem('favoriteRecipes', JSON.stringify(jsonRecipes));
+    const recipesArray = await JSON.parse(favoriteRecipes);
+    if (!favorited) {
+      const favoritedRecipe = {
+        id: ID,
+        type: 'drink',
+        nationality: '',
+        category: recipe.strCategory,
+        alcoholicOrNot: recipe.strAlcoholic,
+        name: recipe.strDrink,
+        image: recipe.strDrinkThumb,
+      };
+      recipesArray.push(favoritedRecipe);
+      localStorage.setItem('favoriteRecipes', JSON.stringify(recipesArray));
+      this.setState({
+        favorited: true,
+      });
+    } else {
+      const newArray = recipesArray
+        .filter((recipeInTheArray) => Number(recipeInTheArray.id) !== Number(ID));
+      localStorage.setItem('favoriteRecipes', JSON.stringify(newArray));
+      this.setState({
+        favorited: false,
+      });
+    }
   };
-  // JÁ ESTÁ ADICIONANDO UMA NOVA RECEITA NOS FAVORITOS, FALTA IMPLEMENTAR A LÓGICA PARA NÃO ADICIONAR REPETIDA E DESFAVORITAR E FALTA REPETIR A LÓGICA NO MealDetails;
 
   render() {
-    const { clickShare } = this.state;
+    const { clickShare, favorited } = this.state;
     const { recipe, done, inProgress,
       ingredientsAndMeasures, ID,
     } = this.props;
@@ -83,10 +107,13 @@ class DrinkDetails extends React.Component {
         </button>
         <button
           type="button"
-          data-testid="favorite-btn"
           onClick={ this.handleFavorite }
         >
-          <img src={ whiteHeartIcon } alt="ícone de desfavoritar" />
+          <img
+            data-testid="favorite-btn"
+            src={ !favorited ? whiteHeartIcon : blackHeartIcon }
+            alt="ícone de favoritar"
+          />
         </button>
         <p data-testid="instructions">
           { recipe.strInstructions }
