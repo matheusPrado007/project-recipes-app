@@ -37,10 +37,11 @@ class FavoriteRecipes extends Component {
   };
 
   desfavoritar = (id) => {
-    // localStorage.removeItem('favoriteRecipes');
-    localStorage
-      .setItem('favoriteRecipes', [...favoritas, favoritas
-        .filter((recipe) => recipe.id !== id)]);
+    const { filtereds } = this.state;
+    // localStorage
+    //   .setItem('favoriteRecipes', [favoritas
+    //     .filter((recipe) => recipe.id !== id)]);
+    this.setState({ filtereds: filtereds.filter((recipe) => recipe.id !== id) });
   };
 
   clickFilter = (type) => {
@@ -101,6 +102,8 @@ class FavoriteRecipes extends Component {
 
                 </p>
 
+                <p>{type}</p>
+
                 <Link to={ `/meals/${id}` }>
                   <p data-testid={ `${index}-horizontal-name` }>{name}</p>
                 </Link>
@@ -143,6 +146,8 @@ class FavoriteRecipes extends Component {
               <Link to={ `/drinks/${id}` }>
                 <p data-testid={ `${index}-horizontal-name` }>{name}</p>
               </Link>
+
+              <p>{type}</p>
 
               <p data-testid={ `${index}-horizontal-top-text` }>{alcoholicOrNot}</p>
 
