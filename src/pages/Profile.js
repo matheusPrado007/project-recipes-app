@@ -19,8 +19,7 @@ class Profile extends Component {
         <Footer />
         <main>
           <p data-testid="profile-email">
-            { getLocalStorage.email }
-            E-mail
+            { getLocalStorage ? getLocalStorage.email : 'Email' }
           </p>
           <button
             type="button"
