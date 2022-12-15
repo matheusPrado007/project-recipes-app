@@ -40,7 +40,6 @@ class RecipeInProgress extends React.Component {
       const ID = pathname.split('/')[2];
       const response = await cocktailDetailsByID(ID);
       const recipeDetails = response.drinks[0];
-      console.log(recipeDetails);
       const NumberMinSlice = 17;
       const NumberMaxSlice = 29;
       const drinksEntries = Object.values(recipeDetails)
@@ -82,22 +81,45 @@ class RecipeInProgress extends React.Component {
     const check = target.checked;
     await this.newFunc(progress, check);
     const { checkbox } = this.state;
-    localStorage.setItem('inProgressRecipes', JSON.stringify(checkbox));
+    console.log(checkbox);
+
+    const { history: { location: { pathname } } } = this.props;
+    const ID = Number(pathname.split('/')[2]);
+    const inProgressRecipes = await JSON.parse(localStorage.getItem('inProgressRecipes'));
+    console.log(inProgressRecipes);
+
+    if (pathname.includes('meals')) {
+      const inProgressCheckbox = {
+        drinks: {
+          ...inProgressRecipes.drinks,
+        },
+        meals: {
+          ...inProgressRecipes.meals,
+          [ID]: checkbox,
+        },
+      };
+      localStorage.setItem('inProgressRecipes', JSON.stringify(inProgressCheckbox));
+    } else {
+      const inProgressCheckbox = {
+        drinks: {
+          ...inProgressRecipes.drinks,
+          [ID]: checkbox,
+        },
+        meals: {
+          ...inProgressRecipes.meals,
+        },
+      };
+      localStorage.setItem('inProgressRecipes', JSON.stringify(inProgressCheckbox));
+    }
   };
 
-  // btnDisabled = () => {
-  //   const { ingredients } = this.state;
-  //   const local = JSON.parse(localStorage.getItem('inProgressRecipes')) || [];
-  //   return ingredients.map((el) => local.find((e) => e === el));
-  // };
-
   render() {
-    const { recipe, ingredients, drinks, checkbox } = this.state;
-    console.log(checkbox);
+    const { recipe, ingredients, drinks } = this.state;
     const { history: { location: { pathname } } } = this.props;
     const local = JSON.parse(localStorage.getItem('inProgressRecipes')) || [];
     return (
       <div>
+        {console.log(local)}
         {
           pathname.includes('meals')
             ? (
@@ -124,7 +146,7 @@ class RecipeInProgress extends React.Component {
                           id="ingredient"
                           type="checkbox"
                           className="line"
-                          checked={ local !== [] && local.find((e) => e === el) }
+                          // checked={ local !== [] && local.find((e) => e === el) }
                           name={ el }
                           onChange={ this.handleCheck }
                           onClick={ this.saveResults }
@@ -181,7 +203,7 @@ class RecipeInProgress extends React.Component {
                           type="checkbox"
                           className="line"
                           name={ e }
-                          checked={ local !== [] && local.find((a) => a === e) }
+                          // checked={ local.find((a) => a === e) }
                           onChange={ this.handleCheck }
                           onClick={ this.saveResults }
                         />

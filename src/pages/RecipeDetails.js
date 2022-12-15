@@ -157,9 +157,9 @@ class RecipeDetails extends React.Component {
         {!done
               && (
                 <NavLink
-                  to={ isMeal
-                    ? `/meals/${ID}/in-progress`
-                    : `/drinks/${ID}/in-progress` }
+                  to={ (!isMeal
+                    ? `/drinks/${ID}/in-progress`
+                    : `/meals/${ID}/in-progress`) }
                 >
                   <button
                     className="startRecipe"
