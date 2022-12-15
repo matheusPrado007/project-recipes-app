@@ -8,43 +8,24 @@ import blackHeartIcon from '../images/blackHeartIcon.svg';
 import mealIcon from '../images/mealIcon.svg';
 import drinkIcon from '../images/drinkIcon.svg';
 
-const favoritas = [{
-  id: 52771,
-  type: 'meal',
-  nationality: 'Italian',
-  category: 'Vegetarian',
-  alcoholicOrNot: 'not',
-  name: 'Spicy Arrabiata Penne',
-  image: 'https://www.themealdb.com/images/media/meals/ustsqw1468250014.jpg',
-},
-
-{
-  id: 178319,
-  type: 'drink',
-  nationality: 'brasileiro',
-  category: 'Cocktail',
-  alcoholicOrNot: 'Alcoholic',
-  name: 'Aquamarine',
-  image: 'https://www.thecocktaildb.com/images/media/drink/zvsre31572902738.jpg',
-},
-];
 class FavoriteRecipes extends Component {
-  // const favoritas = localStorage.getItem('favoriteRecipes');
-
   state = {
-    filtereds: favoritas,
+    recipes: JSON.parse(localStorage.getItem('favoriteRecipes')),
     clickShare: false,
+    filtereds: JSON.parse(localStorage.getItem('favoriteRecipes')),
   };
 
   desfavoritar = (id) => {
-    // localStorage.removeItem('favoriteRecipes');
-    localStorage
-      .setItem('favoriteRecipes', [...favoritas, favoritas
-        .filter((recipe) => recipe.id !== id)]);
+    const { recipes } = this.state;
+    localStorage.setItem('favoriteRecipes', JSON.stringify(recipes
+      .filter((recipe) => recipe.id !== id)));
+    this.setState({ recipes: JSON.parse(localStorage.getItem('favoriteRecipes')),
+      filtereds: JSON.parse(localStorage.getItem('favoriteRecipes')) });
   };
 
   clickFilter = (type) => {
-    this.setState({ filtereds: favoritas.filter((recipe) => recipe.type !== type) });
+    const { recipes } = this.state;
+    this.setState({ filtereds: recipes.filter((recipe) => recipe.type !== type) });
   };
 
   render() {
@@ -52,6 +33,7 @@ class FavoriteRecipes extends Component {
     const { filtereds, clickShare } = this.state;
     return (
       <div>
+        {console.log(filtereds)}
         <Header history={ history } />
 
         <button
@@ -80,7 +62,7 @@ class FavoriteRecipes extends Component {
 
         {clickShare && <p>Link copied!</p>}
 
-        {filtereds.map((recipe, index) => {
+        {filtereds && filtereds.map((recipe, index) => {
           const { id, type, nationality, category, alcoholicOrNot, name, image } = recipe;
           if (type === 'meal') {
             return (
@@ -100,6 +82,8 @@ class FavoriteRecipes extends Component {
                   {`${nationality} - ${category}`}
 
                 </p>
+
+                <p>{type}</p>
 
                 <Link to={ `/meals/${id}` }>
                   <p data-testid={ `${index}-horizontal-name` }>{name}</p>
@@ -143,6 +127,8 @@ class FavoriteRecipes extends Component {
               <Link to={ `/drinks/${id}` }>
                 <p data-testid={ `${index}-horizontal-name` }>{name}</p>
               </Link>
+
+              <p>{type}</p>
 
               <p data-testid={ `${index}-horizontal-top-text` }>{alcoholicOrNot}</p>
 

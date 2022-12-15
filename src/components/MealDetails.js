@@ -77,9 +77,9 @@ class MealDetails extends React.Component {
 
   render() {
     const { clickShare, favorited } = this.state;
-    const { recipe, ingredientsAndMeasures } = this.props;
+    const { recipe, ingredientsAndMeasures, embedID } = this.props;
     return (
-      <body>
+      <div>
         <h2 data-testid="recipe-title">
           { recipe.strMeal }
         </h2>
@@ -122,7 +122,7 @@ class MealDetails extends React.Component {
                 .map((entry, index) => (
                   <li
                     data-testid={ `${index}-ingredient-name-and-measure` }
-                    key={ Object.keys(entry) }
+                    key={ index }
                   >
                     { `${Object.keys(entry)}, ${Object.values(entry)}` }
                   </li>
@@ -130,16 +130,16 @@ class MealDetails extends React.Component {
         </ul>
         <iframe
           data-testid="video"
-          width="140"
-          height="105"
-          src={ recipe.strYoutube }
+          width="280"
+          height="210"
+          src={ `https://www.youtube.com/embed/${embedID}` }
           title="YouTube video player"
           frameBorder="0"
           allow="accelerometer; clipboard-write; encrypted-media;
                 gyroscope; picture-in-picture"
           allowFullScreen
         />
-      </body>
+      </div>
     );
   }
 }
@@ -155,6 +155,7 @@ MealDetails.propTypes = {
     strMealThumb: PropTypes.string,
     strYoutube: PropTypes.string,
   }).isRequired,
+  embedID: PropTypes.string.isRequired,
 };
 
 export default MealDetails;
