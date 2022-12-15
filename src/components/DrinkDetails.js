@@ -79,7 +79,7 @@ class DrinkDetails extends React.Component {
     const { clickShare, favorited } = this.state;
     const { recipe, ingredientsAndMeasures } = this.props;
     return (
-      <body>
+      <div>
         <h2 data-testid="recipe-title">
           { recipe.strDrink }
         </h2>
@@ -122,13 +122,13 @@ class DrinkDetails extends React.Component {
                 .map((entry, index) => (
                   <li
                     data-testid={ `${index}-ingredient-name-and-measure` }
-                    key={ Object.keys(entry) }
+                    key={ index }
                   >
                     { `${Object.keys(entry)}, ${Object.values(entry)}` }
                   </li>
                 ))}
         </ul>
-      </body>
+      </div>
     );
   }
 }
