@@ -2,7 +2,7 @@
   bottom: 0;
   position: fixed;
   text-align: center;
-  transform: translate(-40%);
+  transform: translate(10%);
   width: 80%;
   z-index: 9;
 }

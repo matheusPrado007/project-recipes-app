@@ -33,13 +33,13 @@ RecommendationCard.propTypes = {
   index: PropTypes.number.isRequired,
   isMeal: PropTypes.bool.isRequired,
   recomendation: PropTypes.shape({
-    idDrink: PropTypes.string.isRequired,
-    idMeal: PropTypes.string.isRequired,
-    strDrink: PropTypes.string.isRequired,
-    strDrinkThumb: PropTypes.string.isRequired,
-    strMeaL: PropTypes.string.isRequired,
-    strMeal: PropTypes.string.isRequired,
-    strMealThumb: PropTypes.string.isRequired,
+    idDrink: PropTypes.string,
+    idMeal: PropTypes.string,
+    strDrink: PropTypes.string,
+    strDrinkThumb: PropTypes.string,
+    strMeaL: PropTypes.string,
+    strMeal: PropTypes.string,
+    strMealThumb: PropTypes.string,
   }).isRequired,
 };
 

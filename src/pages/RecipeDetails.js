@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import AliceCarousel from 'react-alice-carousel';
+import { NavLink } from 'react-router-dom';
 import 'react-alice-carousel/lib/alice-carousel.css';
 import { mealDetailsByID, cocktailDetailsByID, mealRecomendationsByID,
   cocktailRecomendationsByID } from '../Services/DetailsAPI';
@@ -26,6 +27,7 @@ class RecipeDetails extends React.Component {
       recomendations: [],
       done: false,
       inProgress: false,
+      embedID: '',
     };
   }
 
@@ -42,11 +44,13 @@ class RecipeDetails extends React.Component {
         Object.values(response.meals[0]).slice(nine, twentyNine),
         Object.values(response.meals[0]).slice(twentyNine),
       );
+      const embedID = await response.meals[0].strYoutube.split('=')[1];
       this.setState({
         recipe: response.meals[0],
         isMeal: true,
         ingredientsAndMeasures,
         recomendations: recomendationsResponse.drinks.slice(0, six),
+        embedID,
       });
     } else {
       const response = await cocktailDetailsByID(ID);
@@ -81,7 +85,6 @@ class RecipeDetails extends React.Component {
     const ID = Number(pathname.split('/')[2]);
     const inProgressRecipes = await JSON.parse(localStorage.getItem('inProgressRecipes'));
     if (pathname.includes('meals')) {
-      console.log(inProgressRecipes);
       const inProgress = Object.keys(inProgressRecipes.meals)
         .some((inProgressRecipe) => Number(inProgressRecipe) === ID);
       this.setState({
@@ -113,19 +116,20 @@ class RecipeDetails extends React.Component {
   };
 
   render() {
-    const { recipe, done, isMeal,
+    const { recipe, done, isMeal, embedID,
       inProgress, recomendations, ingredientsAndMeasures,
     } = this.state;
     const { history: { location: { pathname } } } = this.props;
     const ID = pathname.split('/')[2];
     return (
-      <body>
+      <div>
         { isMeal
           ? (
             <MealDetails
               recipe={ recipe }
               inProgress={ inProgress }
               ingredientsAndMeasures={ ingredientsAndMeasures }
+              embedID={ embedID }
               done={ done }
               ID={ ID }
             />)
@@ -143,7 +147,7 @@ class RecipeDetails extends React.Component {
           items={
             recomendations.map((recomendation, index) => (
               <RecommendationCard
-                key={ isMeal ? recomendation.idDrink : recomendation.idMeal }
+                key={ isMeal ? recomendation.strDrink : recomendation.strMeal }
                 recomendation={ recomendation }
                 index={ index }
                 isMeal={ isMeal }
@@ -152,8 +156,8 @@ class RecipeDetails extends React.Component {
         />
         {!done
               && (
-                <a
-                  href={ isMeal
+                <NavLink
+                  to={ isMeal
                     ? `/meals/${ID}/in-progress`
                     : `/drinks/${ID}/in-progress` }
                 >
@@ -164,8 +168,8 @@ class RecipeDetails extends React.Component {
                   >
                     {!inProgress ? 'StartRecipe' : 'Continue Recipe'}
                   </button>
-                </a>)}
-      </body>
+                </NavLink>)}
+      </div>
     );
   }
 }
