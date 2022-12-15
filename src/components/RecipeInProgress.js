@@ -71,7 +71,7 @@ class RecipeInProgress extends React.Component {
     const progress = a;
     if (b === true) {
       this.setState((prev) => ({ checkbox: [...prev.checkbox, progress] }));
-    } else {
+    } else if (b === false) {
       const filterRemove = checkbox.filter((el) => el !== progress);
       this.setState({ checkbox: filterRemove });
     }
@@ -85,8 +85,15 @@ class RecipeInProgress extends React.Component {
     localStorage.setItem('inProgressRecipes', JSON.stringify(checkbox));
   };
 
+  // btnDisabled = () => {
+  //   const { ingredients } = this.state;
+  //   const local = JSON.parse(localStorage.getItem('inProgressRecipes')) || [];
+  //   return ingredients.map((el) => local.find((e) => e === el));
+  // };
+
   render() {
-    const { recipe, ingredients, drinks } = this.state;
+    const { recipe, ingredients, drinks, checkbox } = this.state;
+    console.log(checkbox);
     const { history: { location: { pathname } } } = this.props;
     const local = JSON.parse(localStorage.getItem('inProgressRecipes')) || [];
     return (
@@ -118,7 +125,6 @@ class RecipeInProgress extends React.Component {
                           type="checkbox"
                           className="line"
                           checked={ local !== [] && local.find((e) => e === el) }
-                          value={ el }
                           name={ el }
                           onChange={ this.handleCheck }
                           onClick={ this.saveResults }
@@ -138,7 +144,11 @@ class RecipeInProgress extends React.Component {
                 <button type="button" data-testid="favorite-btn">
                   Favoritar
                 </button>
-                <button type="button" data-testid="finish-recipe-btn">
+                <button
+                  type="button"
+                  data-testid="finish-recipe-btn"
+                  // disabled={ true }
+                >
                   Finalizar
                 </button>
 
@@ -170,7 +180,6 @@ class RecipeInProgress extends React.Component {
                         <input
                           type="checkbox"
                           className="line"
-                          value={ e }
                           name={ e }
                           checked={ local !== [] && local.find((a) => a === e) }
                           onChange={ this.handleCheck }
@@ -191,7 +200,11 @@ class RecipeInProgress extends React.Component {
                 <button type="button" data-testid="favorite-btn">
                   Favoritar
                 </button>
-                <button type="button" data-testid="finish-recipe-btn">
+                <button
+                  type="button"
+                  data-testid="finish-recipe-btn"
+                  // disabled={ local.find((e) => e) }
+                >
                   Finalizar
                 </button>
               </div>
