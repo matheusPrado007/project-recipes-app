@@ -7,6 +7,7 @@ import App from '../App';
 
 describe('Testa o componente FavoriteRecipes', () => {
   const favorites = '/favorite-recipes';
+  const recipe = [{ id: '15997', type: 'drink', nationality: '', category: 'Ordinary Drink', alcoholicOrNot: 'Optional alcohol', name: 'GG', image: 'https://www.thecocktaildb.com/images/media/drink/vyxwut1468875960.jpg' }, { id: '52977', type: 'meal', nationality: 'Turkish', category: 'Side', alcoholicOrNot: '', name: 'Corba', image: 'https://www.themealdb.com/images/media/meals/58oia61564916529.jpg' }];
 
   Object.assign(navigator, {
     clipboard: {
@@ -14,40 +15,33 @@ describe('Testa o componente FavoriteRecipes', () => {
     },
   });
 
-  test('se é renderizado todas as receitas', () => {
+  test('se ao acessar a tela de receitas favoritas ainda não há nenhuma receita favorita', () => {
     const { history } = renderWithRouterAndRedux(<App />);
 
     act(() => {
       history.push(favorites);
     });
 
-    // const favoritas = localStorage.getItem('user');
-    // console.log(favoritas);
-
-    const names = screen.getAllByTestId(/horizontal-name/i);
-
-    expect(names.length).toBe(2);
+    expect(localStorage.getItem('favoriteRecipes')).toBe(null);
   });
 
-  test('se ao clicar no botão de desfavoritar, a receita é removida da tela', () => {
+  test('se ao iniciar a aplicação e favoritar alguma receita, aparece na tela de receitas favoritas', async () => {
     const { history } = renderWithRouterAndRedux(<App />);
+
+    localStorage.setItem('favoriteRecipes', JSON.stringify(recipe));
 
     act(() => {
       history.push(favorites);
     });
 
-    const names = screen.getAllByTestId(/horizontal-name/i);
-
-    const btnDesfavoritar = screen.getAllByTestId(/horizontal-favorite/i);
-    userEvent.click(btnDesfavoritar[0]);
-    userEvent.click(btnDesfavoritar[1]);
-
-    expect(names[0]).not.toBeInTheDocument();
-    expect(names[1]).not.toBeInTheDocument();
+    const nameRecipe = await screen.findByText('GG');
+    expect(nameRecipe).toBeInTheDocument();
   });
 
   test('se ao clicar no ícone de comida, é renderizado apenas as comidas', () => {
     const { history } = renderWithRouterAndRedux(<App />);
+
+    localStorage.setItem('favoriteRecipes', JSON.stringify(recipe));
 
     act(() => {
       history.push(favorites);
@@ -64,12 +58,11 @@ describe('Testa o componente FavoriteRecipes', () => {
   test('se ao clicar no ícone de bebida, é renderizado apenas as bebidas', () => {
     const { history } = renderWithRouterAndRedux(<App />);
 
+    localStorage.setItem('favoriteRecipes', JSON.stringify(recipe));
+
     act(() => {
       history.push(favorites);
     });
-
-    const btnAll = screen.getByTestId(/filter-by-all-btn/i);
-    userEvent.click(btnAll);
 
     const textMeal = screen.getByText(/meal/i);
 
@@ -79,8 +72,49 @@ describe('Testa o componente FavoriteRecipes', () => {
     expect(textMeal).not.toBeInTheDocument();
   });
 
+  test('se ao clicar no botão ALL, todas as receitas aparecem', () => {
+    const { history } = renderWithRouterAndRedux(<App />);
+
+    localStorage.setItem('favoriteRecipes', JSON.stringify(recipe));
+
+    act(() => {
+      history.push(favorites);
+    });
+
+    const textMeal = screen.getByText(/meal/i);
+    const textDrink = screen.getByText('drink');
+
+    const btnAll = screen.getByTestId(/by-all/);
+    userEvent.click(btnAll);
+
+    expect(textMeal).toBeInTheDocument();
+    expect(textDrink).toBeInTheDocument();
+  });
+
+  test('se ao clicar no botão de desfavoritar, a receita é removida da tela', () => {
+    const { history } = renderWithRouterAndRedux(<App />);
+
+    localStorage.setItem('favoriteRecipes', JSON.stringify(recipe));
+
+    act(() => {
+      history.push(favorites);
+    });
+
+    const textDrink = screen.getByText('drink');
+    const textMeal = screen.getByText(/meal/i);
+
+    const btnDesfavoritar = screen.getAllByTestId(/horizontal-favorite/i);
+    userEvent.click(btnDesfavoritar[0]);
+    userEvent.click(btnDesfavoritar[1]);
+
+    expect(textDrink).not.toBeInTheDocument();
+    expect(textMeal).not.toBeInTheDocument();
+  });
+
   test('se ao clicar no ícone de compartilhar, é copiado o link de detalhes da receita', () => {
     const { history } = renderWithRouterAndRedux(<App />);
+
+    localStorage.setItem('favoriteRecipes', JSON.stringify(recipe));
 
     act(() => {
       history.push(favorites);
