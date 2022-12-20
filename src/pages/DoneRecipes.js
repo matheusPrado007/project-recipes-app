@@ -6,31 +6,32 @@ import shareIcon from '../images/shareIcon.svg';
 
 class DoneRecipes extends Component {
   state = {
-    array: [{
-      idMeal: '123456',
-      strMealThumb: 'algumaCoisa',
-      strMeal: 'comida',
-      strCategory: 'comestível',
-      strArea: 'daqui',
-      strTags: ['boa', 'demais'],
-    }, {
-      idDrink: '654321',
-      strDrinkThumb: 'algumaCoisa',
-      strDrink: 'bebida',
-      strCategory: 'bebível',
-      strAlcoholic: 'sim',
-      strTags: ['dá', 'pro', 'gasto'],
-    }],
+    array: [],
+    filters: [],
   };
 
-  allFilterButton = () => {};
+  componentDidMount() {
+    const recipesDoneLocal = JSON.parse(localStorage.getItem('doneRecipes'));
+    this.setState({ array: recipesDoneLocal });
+    const { array } = this.state;
+    this.setState({ filters: array });
+  }
 
-  mealsFilterButton = () => {};
-
-  drinksFitlerButton = () => {};
+  filterButton = ({ target }) => {
+    const { value } = target;
+    const { array } = this.state;
+    console.log(value);
+    if (value === 'All') {
+      this.setState({ filters: array });
+    } else if (value === 'Meals') {
+      this.setState({ filters: array.filter((receita) => receita.idMeal) });
+    } else if (value === 'Drinks') {
+      this.setState({ filters: array.filter((receita) => receita.idDrink) });
+    }
+  };
 
   render() {
-    const { array } = this.state;
+    const { filters } = this.state;
     const { history } = this.props;
     return (
       <div>
@@ -39,7 +40,8 @@ class DoneRecipes extends Component {
         <button
           data-testid="filter-by-all-btn"
           type="button"
-          onClick={ this.allFilterButton }
+          value="All"
+          onClick={ this.filterButton }
         >
           All
         </button>
@@ -47,7 +49,8 @@ class DoneRecipes extends Component {
         <button
           data-testid="filter-by-meal-btn"
           type="button"
-          onClick={ this.mealsFilterButton }
+          value="Meals"
+          onClick={ this.filterButton }
         >
           Meals
         </button>
@@ -55,12 +58,13 @@ class DoneRecipes extends Component {
         <button
           data-testid="filter-by-drink-btn"
           type="button"
-          onClick={ this.drinksFitlerButton }
+          value="Drinks"
+          onClick={ this.filterButton }
         >
           Drinks
         </button>
 
-        { array.map((recipeDone, index) => (
+        { filters.map((recipeDone, index) => (
           <div key={ recipeDone.idMeal }>
 
             { recipeDone.idMeal && (
@@ -112,7 +116,11 @@ class DoneRecipes extends Component {
                || recipeDone.strAlcoholic }
             </h4>
 
-            <h4 data-testid={ `${index}-horizontal-done-date` }>Data</h4>
+            <h4
+              data-testid={ `${index}-horizontal-done-date` }
+            >
+              { recipeDone.doneDate }
+            </h4>
 
             <button
               data-testid={ `${index}-horizontal-share-btn` }
