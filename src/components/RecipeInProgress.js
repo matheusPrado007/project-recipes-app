@@ -1,28 +1,39 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+// import clipboardCopy from 'clipboard-copy';
 import { mealDetailsByID,
   cocktailDetailsByID,
 } from '../Services/DetailsAPI';
 import '../css/RecipeInProgress.css';
 
 class RecipeInProgress extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      recipe: {},
-      checkbox: [],
-    };
-  }
+  state = {
+    recipe: {},
+    checkbox: [],
+    // copy: false,
+  };
 
   async componentDidMount() {
-    this.newFunc();
-    const { history: { location: { pathname } } } = this.props;
+    const { history: { location: { pathname } }, match: { params: { id } } } = this.props;
+    const inProgressRecipes = JSON.parse(localStorage.getItem('inProgressRecipes'));
+    if (inProgressRecipes === null) {
+      const inProgressCheckbox = { drinks: {}, meals: {} };
+      localStorage.setItem('inProgressRecipes', JSON.stringify(inProgressCheckbox));
+    }
+    if (pathname.includes('meals') && inProgressRecipes !== null) {
+      this.setState({
+        checkbox: inProgressRecipes.meals[id],
+      });
+    } else if (pathname.includes('drinks') && inProgressRecipes !== null) {
+      this.setState({
+        checkbox: inProgressRecipes.drinks[id],
+      });
+    }
+    const NumberMaxSlice = 29;
     if (pathname.includes('meals')) {
-      const ID = pathname.split('/')[2];
-      const response = await mealDetailsByID(ID);
+      const response = await mealDetailsByID(id);
       const recipeDetails = response.meals[0];
       const NumberMinSlice = 9;
-      const NumberMaxSlice = 29;
       const ingredientsEntries = Object.values(recipeDetails)
         .slice(NumberMinSlice, NumberMaxSlice);
       const ingredients = [];
@@ -31,17 +42,14 @@ class RecipeInProgress extends React.Component {
           ingredients.push(element);
         }
       });
-
       this.setState({
         recipe: recipeDetails,
         ingredients,
       });
-    } else {
-      const ID = pathname.split('/')[2];
-      const response = await cocktailDetailsByID(ID);
+    } else if (pathname.includes('drinks')) {
+      const response = await cocktailDetailsByID(id);
       const recipeDetails = response.drinks[0];
       const NumberMinSlice = 17;
-      const NumberMaxSlice = 29;
       const drinksEntries = Object.values(recipeDetails)
         .slice(NumberMinSlice, NumberMaxSlice);
       const drinks = [];
@@ -57,85 +65,75 @@ class RecipeInProgress extends React.Component {
     }
   }
 
-  handleCheck = ({ target }) => {
-    if (target.checked) {
-      target.parentNode.classList.add('line');
-    } else {
-      target.parentNode.classList.remove('line');
-    }
-  };
-
-  newFunc = async (a, b) => {
+  componentDidUpdate() {
     const { checkbox } = this.state;
-    const progress = a;
-    if (b === true) {
-      this.setState((prev) => ({ checkbox: [...prev.checkbox, progress] }));
-    } else if (b === false) {
-      const filterRemove = checkbox.filter((el) => el !== progress);
-      this.setState({ checkbox: filterRemove });
+    const { history: { location: { pathname } }, match: { params: { id } } } = this.props;
+    const inProgressRecipes = JSON.parse(localStorage.getItem('inProgressRecipes'));
+    if (inProgressRecipes === null) {
+      const inProgressCheckbox = {
+        drinks: {},
+        meals: {},
+      }; localStorage.setItem('inProgressRecipes', JSON.stringify(inProgressCheckbox));
     }
-  };
-
-  saveResults = async ({ target }) => {
-    const progress = target.name;
-    const check = target.checked;
-    await this.newFunc(progress, check);
-    const { checkbox } = this.state;
-    console.log(checkbox);
-
-    const { history: { location: { pathname } } } = this.props;
-    const ID = Number(pathname.split('/')[2]);
-    const inProgressRecipes = await JSON.parse(localStorage.getItem('inProgressRecipes'));
-    console.log(inProgressRecipes);
-
-    if (pathname.includes('meals')) {
+    if (pathname.includes('meals') && inProgressRecipes !== null) {
+      const inProgressCheckbox = {
+        drinks: { ...inProgressRecipes.drinks },
+        meals: {
+          ...inProgressRecipes.meals, [id]: checkbox },
+      }; localStorage.setItem('inProgressRecipes', JSON.stringify(inProgressCheckbox));
+    } else if (pathname.includes('drinks') && inProgressRecipes !== null) {
       const inProgressCheckbox = {
         drinks: {
-          ...inProgressRecipes.drinks,
-        },
-        meals: {
-          ...inProgressRecipes.meals,
-          [ID]: checkbox,
-        },
-      };
-      localStorage.setItem('inProgressRecipes', JSON.stringify(inProgressCheckbox));
-    } else {
-      const inProgressCheckbox = {
-        drinks: {
-          ...inProgressRecipes.drinks,
-          [ID]: checkbox,
-        },
-        meals: {
-          ...inProgressRecipes.meals,
-        },
-      };
-      localStorage.setItem('inProgressRecipes', JSON.stringify(inProgressCheckbox));
+          ...inProgressRecipes.drinks, [id]: checkbox },
+        meals: { ...inProgressRecipes.meals },
+      }; localStorage.setItem('inProgressRecipes', JSON.stringify(inProgressCheckbox));
+    }
+  }
+
+  handleCheck = (event) => {
+    const progress = event.target.name;
+    if (event.target.checked === true) {
+      event.target.parentNode.classList.add('line');
+      this.setState((state) => ({ checkbox: [...state.checkbox, progress] }));
+    } else if (event.target.checked === false) {
+      event.target.parentNode.classList.remove('line');
+      this.setState((state) => ({ checkbox: state.checkbox
+        .filter((el) => el !== progress) }));
     }
   };
+
+  onClick = () => {
+    const { history: { push } } = this.props;
+    push('/done-recipes');
+  };
+
+  // favorite = () => {
+  //   const { match: { params: { id } } } = this.props;
+  //   const url = `http://localhost:3000/meals/52772/${id}`;
+  //   clipboardCopy(url);
+  //   this.setState({ copy: true });
+  // };
 
   render() {
-    const { recipe, ingredients, drinks } = this.state;
+    const { recipe, ingredients, drinks, checkbox } = this.state;
     const { history: { location: { pathname } } } = this.props;
-    const local = JSON.parse(localStorage.getItem('inProgressRecipes')) || [];
+    const ingredientsList = ingredients !== undefined && ingredients.map((el) => el);
+    const drinksList = drinks !== undefined && drinks.map((el) => el);
     return (
       <div>
-        {console.log(local)}
-        {
-          pathname.includes('meals')
-            ? (
-              <div>
-                <h1
-                  data-testid="recipe-title"
-                >
-                  { recipe.strMeal }
-                </h1>
-                <img
-                  src={ recipe.strMealThumb }
-                  alt={ recipe.strMeal }
-                  data-testid="recipe-photo"
-                />
-                <br />
-                { ingredients
+        { pathname.includes('meals')
+          ? (
+            <div>
+              <h1 data-testid="recipe-title">
+                { recipe.strMeal }
+              </h1>
+              <img
+                src={ recipe.strMealThumb }
+                alt={ recipe.strMeal }
+                data-testid="recipe-photo"
+              />
+              <br />
+              { ingredients
                     && ingredients.map((el, i) => (
                       <label
                         key={ i }
@@ -146,53 +144,53 @@ class RecipeInProgress extends React.Component {
                           id="ingredient"
                           type="checkbox"
                           className="line"
-                          // checked={ local !== [] && local.find((e) => e === el) }
                           name={ el }
+                          checked={ checkbox
+                            && checkbox
+                              .find((e) => e === el) }
                           onChange={ this.handleCheck }
-                          onClick={ this.saveResults }
                         />
                         {`${el}`}
                       </label>
                     ))}
-                <p data-testid="recipe-category">
-                  { recipe.strCategory }
-                </p>
-                <p data-testid="instructions">
-                  { recipe.strInstructions }
-                </p>
-                <button type="button" data-testid="share-btn">
-                  Compartilhar
-                </button>
-                <button type="button" data-testid="favorite-btn">
-                  Favoritar
-                </button>
-                <button
-                  type="button"
-                  data-testid="finish-recipe-btn"
-                  // disabled={ true }
-                >
-                  Finalizar
-                </button>
+              <p data-testid="recipe-category">
+                { recipe.strCategory }
+              </p>
+              <p data-testid="instructions">
+                { recipe.strInstructions }
+              </p>
+              <button type="button" data-testid="share-btn">
+                Compartilhar
+              </button>
+              <button type="button" data-testid="favorite-btn">
+                Favoritar
+              </button>
+              <button
+                type="button"
+                data-testid="finish-recipe-btn"
+                disabled={ checkbox !== undefined
+                    && checkbox.length !== (ingredientsList.length) }
+                onClick={ this.onClick }
+              >
+                Finalizar
+              </button>
 
-              </div>
-            )
-            : (
-              <div>
-                <h1
-                  data-testid="recipe-title"
-                >
-                  { recipe.strDrink }
-                </h1>
-                <p data-testid="recipe-category">
-                  { recipe.strCategory }
-                </p>
-                <img
-                  src={ recipe.strDrinkThumb }
-                  alt={ recipe.strDrink }
-                  data-testid="recipe-photo"
-                />
-                <br />
-                { drinks
+            </div>
+          ) : (
+            <div>
+              <h1 data-testid="recipe-title">
+                { recipe.strDrink }
+              </h1>
+              <p data-testid="recipe-category">
+                { recipe.strCategory }
+              </p>
+              <img
+                src={ recipe.strDrinkThumb }
+                alt={ recipe.strDrink }
+                data-testid="recipe-photo"
+              />
+              <br />
+              { drinks
                     && drinks.map((e, i) => (
                       <label
                         key={ i }
@@ -203,45 +201,49 @@ class RecipeInProgress extends React.Component {
                           type="checkbox"
                           className="line"
                           name={ e }
-                          // checked={ local.find((a) => a === e) }
-                          onChange={ this.handleCheck }
-                          onClick={ this.saveResults }
+                          checked={ checkbox
+                            && checkbox
+                              .find((el) => el === e) }
+                          onClick={ this.handleCheck }
                         />
                         {`${e}`}
                       </label>
                     ))}
-                <p>
-                  { recipe.strAlcoholic }
-                </p>
-                <p data-testid="instructions">
-                  {recipe.strInstructions}
-                </p>
-                <button type="button" data-testid="share-btn">
-                  Compartilhar
-                </button>
-                <button type="button" data-testid="favorite-btn">
-                  Favoritar
-                </button>
-                <button
-                  type="button"
-                  data-testid="finish-recipe-btn"
-                  // disabled={ local.find((e) => e) }
-                >
-                  Finalizar
-                </button>
-              </div>
-            )
-        }
+              <p>
+                { recipe.strAlcoholic }
+              </p>
+              <p data-testid="instructions">
+                {recipe.strInstructions}
+              </p>
+              <button type="button" data-testid="share-btn">
+                Compartilhar
+              </button>
+              <button type="button" data-testid="favorite-btn">
+                Favoritar
+              </button>
+              <button
+                type="button"
+                data-testid="finish-recipe-btn"
+                disabled={ checkbox !== undefined
+                    && checkbox.length !== (drinksList.length) }
+                onClick={ this.onClick }
+              >
+                Finalizar
+              </button>
+            </div>
+          )}
       </div>
     );
   }
 }
-
 RecipeInProgress.propTypes = {
   history: PropTypes.shape({
     location: PropTypes.shape({
       pathname: PropTypes.string,
     }),
-  }).isRequired,
-};
+  }),
+  match: PropTypes.shape({
+    params: PropTypes.objectOf,
+  }),
+}.isRequired;
 export default RecipeInProgress;
