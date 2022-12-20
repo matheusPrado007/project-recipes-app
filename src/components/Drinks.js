@@ -22,7 +22,6 @@ class Recipes extends Component {
     const requestDrinksApi = await getDrinksApi();
     const result = requestDrinksApi.drinks;
     const twelve = 12;
-    console.log(result);
     dispatch(getDrinksAndFoods(result.slice(0, twelve)));
   };
 
