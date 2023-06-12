@@ -1,7 +1,7 @@
 # Boas-vindas ao repositório do projeto App de Receitas!
 # Receitas App
 
-Este é um aplicativo de receitas desenvolvido utilizando os recursos mais modernos do ecossistema React: Hooks e Context API! Com ele, você poderá visualizar, buscar, filtrar, favoritar e acompanhar o progresso de preparação de receitas de comidas e bebidas.
+Este é um aplicativo de receitas desenvolvido em grupo com os colegas Eduardo Luiz Marinho de Mélo, Iago Viotti Ramalho, Fabio Henrique Luiz, Eric Maike De Aguiar Lopes,  utilizando os recursos mais modernos do ecossistema React: Hooks e Context API! Com ele, você poderá visualizar, buscar, filtrar, favoritar e acompanhar o progresso de preparação de receitas de comidas e bebidas.
 
 ⚠️ **Aviso**: O aplicativo utiliza duas APIs distintas, uma para comidas e outra para bebidas.
 
@@ -66,7 +66,13 @@ Siga os passos abaixo para executar o aplicativo em sua máquina local:
 </table>
 
 
+## Contribuidores
 
+- [@Eduardo L. M. de Mélo](https://github.com/EduardoL-s)
+- [@Iago Viotti ](https://github.com/iagoViotti)
+- [@Fabio Henrique Luiz ](https://github.com/FabioHLuiz )
+- [@Eric Maike de Aguiar Lopes ](https://[github.com/FabioHLuiz](https://github.com/EricMaike) )
+- [@Matheus Prado ](https://[github.com/iagoViotti](https://github.com/matheusPrado007))
 
 
 
