@@ -1,7 +1,7 @@
 # Boas-vindas ao repositório do projeto App de Receitas!
 # Receitas App
 
-Este é um aplicativo de receitas desenvolvido em grupo com os colegas Eduardo Luiz Marinho de Mélo, Iago Viotti Ramalho, Fabio Henrique Luiz, Eric Maike De Aguiar Lopes,  utilizando os recursos mais modernos do ecossistema React: Hooks e Redux! Com ele, você poderá visualizar, buscar, filtrar, favoritar e acompanhar o progresso de preparação de receitas de comidas e bebidas.
+Este é um aplicativo de receitas desenvolvido em grupo com os colegas Eduardo Luiz Marinho de Mélo, Iago Viotti Ramalho, Fabio Henrique Luiz, Eric Maike De Aguiar Lopes,  utilizando os recursos mais modernos do ecossistema React: Redux! Com ele, você poderá visualizar, buscar, filtrar, favoritar e acompanhar o progresso de preparação de receitas de comidas e bebidas.
 
 ⚠️ **Aviso**: O aplicativo utiliza duas APIs distintas, uma para comidas e outra para bebidas.
 
