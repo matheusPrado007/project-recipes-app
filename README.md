@@ -23,7 +23,6 @@ O aplicativo foi desenvolvido utilizando as seguintes tecnologias:
 
 - React: Uma biblioteca JavaScript para construção de interfaces de usuário.
 - Redux: Redux é um container de estado previsível para aplicações JavaScript. Ele simplifica a gestão do estado da aplicação, tornando-a consistente e fácil de testar..
-- Context API: Uma API do React para compartilhamento de estado entre componentes.
 - CSS: Utilizado para estilização dos componentes e layout do aplicativo.
 - APIs de comidas e bebidas: Foram utilizadas duas APIs distintas, uma para comidas e outra para bebidas, a fim de obter as receitas.
 
